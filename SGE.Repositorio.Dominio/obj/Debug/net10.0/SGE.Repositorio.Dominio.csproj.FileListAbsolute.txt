@@ -1,0 +1,11 @@
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Dominio/bin/Debug/net10.0/SGE.Repositorio.Dominio.deps.json
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Dominio/bin/Debug/net10.0/SGE.Repositorio.Dominio.dll
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Dominio/bin/Debug/net10.0/SGE.Repositorio.Dominio.pdb
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Dominio/obj/Debug/net10.0/SGE.Repositorio.Dominio.GeneratedMSBuildEditorConfig.editorconfig
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Dominio/obj/Debug/net10.0/SGE.Repositorio.Dominio.AssemblyInfoInputs.cache
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Dominio/obj/Debug/net10.0/SGE.Repositorio.Dominio.AssemblyInfo.cs
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Dominio/obj/Debug/net10.0/SGE.Repositorio.Dominio.csproj.CoreCompileInputs.cache
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Dominio/obj/Debug/net10.0/SGE.Repositorio.Dominio.dll
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Dominio/obj/Debug/net10.0/refint/SGE.Repositorio.Dominio.dll
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Dominio/obj/Debug/net10.0/SGE.Repositorio.Dominio.pdb
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Dominio/obj/Debug/net10.0/ref/SGE.Repositorio.Dominio.dll

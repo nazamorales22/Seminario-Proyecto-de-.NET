@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SGE.Repositorio.Infraestructura", "SGE.Repositorio.Infraestructura.csproj", "{674CC593-4861-7063-8305-3F7827A4BFD8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{674CC593-4861-7063-8305-3F7827A4BFD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{674CC593-4861-7063-8305-3F7827A4BFD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{674CC593-4861-7063-8305-3F7827A4BFD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{674CC593-4861-7063-8305-3F7827A4BFD8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5F7965C9-F591-4C4D-820E-1107968E8EB0}
+	EndGlobalSection
+EndGlobal

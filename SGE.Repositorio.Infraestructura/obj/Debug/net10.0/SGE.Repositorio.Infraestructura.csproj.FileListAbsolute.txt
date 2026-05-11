@@ -1,0 +1,17 @@
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Infraestructura/bin/Debug/net10.0/SGE.Repositorio.Infraestructura.deps.json
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Infraestructura/bin/Debug/net10.0/SGE.Repositorio.Infraestructura.dll
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Infraestructura/bin/Debug/net10.0/SGE.Repositorio.Infraestructura.pdb
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Infraestructura/bin/Debug/net10.0/SGE.Repositorio.Aplicacion.dll
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Infraestructura/bin/Debug/net10.0/SGE.Repositorio.Dominio.dll
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Infraestructura/bin/Debug/net10.0/SGE.Repositorio.Aplicacion.pdb
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Infraestructura/bin/Debug/net10.0/SGE.Repositorio.Dominio.pdb
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Infraestructura/obj/Debug/net10.0/SGE.Repositorio.Infraestructura.csproj.AssemblyReference.cache
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Infraestructura/obj/Debug/net10.0/SGE.Repositorio.Infraestructura.GeneratedMSBuildEditorConfig.editorconfig
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Infraestructura/obj/Debug/net10.0/SGE.Repositorio.Infraestructura.AssemblyInfoInputs.cache
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Infraestructura/obj/Debug/net10.0/SGE.Repositorio.Infraestructura.AssemblyInfo.cs
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Infraestructura/obj/Debug/net10.0/SGE.Repositorio.Infraestructura.csproj.CoreCompileInputs.cache
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Infraestructura/obj/Debug/net10.0/SGE.Repo.94E42539.Up2Date
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Infraestructura/obj/Debug/net10.0/SGE.Repositorio.Infraestructura.dll
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Infraestructura/obj/Debug/net10.0/refint/SGE.Repositorio.Infraestructura.dll
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Infraestructura/obj/Debug/net10.0/SGE.Repositorio.Infraestructura.pdb
+/home/nvzv/SGE_Proyecto/SGE.Repositorio.Infraestructura/obj/Debug/net10.0/ref/SGE.Repositorio.Infraestructura.dll
