@@ -2,3 +2,5 @@
 2|ozuna historia clinica|10/5/2026 4:32:46 a. m.|RecienCreado|14748
 3|repaso ayed|11/5/2026 11:31:07 a. m.|RecienCreado|14748
 4|consulta mdica Matias Avila|11/5/2026 12:57:09 p. m.|RecienCreado|14748
+5|Revision liz O.|11/5/2026 4:17:20 p. m.|RecienCreado|14748
+6|simon V.. pulmonia|11/5/2026 4:21:20 p. m.|RecienCreado|14748
