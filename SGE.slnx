@@ -3,8 +3,4 @@
   <Project Path="SGE.Consola/SGE.Consola.csproj" />
   <Project Path="SGE.Dominio/SGE.Dominio.csproj" />
   <Project Path="SGE.Infraestructura/SGE.Infraestructura.csproj" />
-  <Project Path="SGE.Repositorio.Aplicacion/SGE.Repositorio.Aplicacion.csproj" />
-  <Project Path="SGE.Repositorio.Consola/SGE.Repositorio.Consola.csproj" />
-  <Project Path="SGE.Repositorio.Dominio/SGE.Repositorio.Dominio.csproj" />
-  <Project Path="SGE.Repositorio.Infraestructura/SGE.Repositorio.Infraestructura.csproj" />
 </Solution>
