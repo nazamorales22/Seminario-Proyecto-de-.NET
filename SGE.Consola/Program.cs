@@ -84,10 +84,13 @@ while (!salir)
     }
 }*/
 
+
 using SGE.Aplicacion.Expedientes;
 using SGE.Aplicacion.Tramites;
 using SGE.Infraestructura;
 using SGE.Dominio.Tramites;
+using SGE.Dominio.Expedientes;
+
 
 // 1. CONFIGURACIÓN (Inyección de dependencias manual)
 // Aquí creamos los "motores" que graban en el disco de tu Linux Mint
@@ -102,6 +105,7 @@ var authService = new FakeAutorizacionService();
 var altaExpediente = new AltaExpedienteUseCase(repoExpediente, authService);
 var altaTramite = new AltaTramiteUseCase(repoTramite, repoExpediente, authService);
 var listarExpedientes = new ListarExpedientesUseCase(repoExpediente);
+
 // 2. MENÚ DE USUARIO
 bool salir = false;
 while (!salir)
@@ -122,40 +126,35 @@ while (!salir)
             Console.Write("Ingrese la carátula del expediente: ");
             string? caratula = Console.ReadLine();
             try {
-                // Usamos un Guid fijo o aleatorio para el usuario por ahora
                 altaExpediente.Ejecutar(caratula ?? "", Guid.NewGuid());
                 Console.WriteLine("¡Expediente creado con éxito!");
             } catch (Exception e) { Console.WriteLine($"Error: {e.Message}"); }
             break;
 
         case "2":
-            Console.Write("Ingrese el ID del expediente (GUID): ");
-            if (Guid.TryParse(Console.ReadLine(), out Guid expId)) {
-                Console.Write("Ingrese el contenido del trámite: ");
-                string contenido = Console.ReadLine() ?? "";
-                
-                // Mostramos opciones de etiquetas (puedes Hardcodear una por ahora)
-                Console.WriteLine("Etiqueta: 1.Resolucion, 2.PaseAEstudio, 3.PaseAlArchivo");
-                // Aquí podrías parsear la etiqueta, por ahora mandamos 'PaseAEstudio' de prueba
-                try {
-                    altaTramite.Ejecutar(expId, EtiquetaTramite.PaseAEstudio, contenido, Guid.NewGuid());
-                    Console.WriteLine("¡Trámite cargado y estado de expediente actualizado!");
-                } catch (Exception e) { Console.WriteLine($"Error: {e.Message}"); }
-            } else {
-                Console.WriteLine("ID de expediente no válido.");
-            }
-            break;
+           Console.Write("Ingrese el ID del expediente (GUID): ");
+           if (Guid.TryParse(Console.ReadLine(), out Guid expId)) {
+               Console.Write("Ingrese el contenido del trámite: ");
+               string contenidoStr = Console.ReadLine() ?? "";
+        
+               try {
+                  // EL ORDEN TIENE QUE SER: ID, CONTENIDO (string), ETIQUETA, USUARIO
+                  altaTramite.Ejecutar(expId, contenidoStr, EtiquetaTramite.PaseAEstudio, Guid.NewGuid());
+                  Console.WriteLine("¡Trámite cargado y estado de expediente actualizado!");
+             } catch (Exception e) { Console.WriteLine($"Error: {e.Message}"); }
+           } else {
+        Console.WriteLine("ID de expediente no válido.");
+        }
+        break;
 
         case "3":
             Console.WriteLine("\n--- LISTADO DE EXPEDIENTES ---");
-            var lista = listarExpedientes.Ejecutar();
-            if (!lista.Any()) {
-                Console.WriteLine("No hay expedientes cargados.");
-            } else {
+            try {
+                var lista = listarExpedientes.Ejecutar();
                 foreach (var e in lista) {
                     Console.WriteLine($"ID: {e.Id} | Carátula: {e.Caratula} | Estado: {e.Estado}");
                 }
-            }
+            } catch (Exception e) { Console.WriteLine($"Error al listar: {e.Message}"); }
             break;
 
         case "0": salir = true; break;
