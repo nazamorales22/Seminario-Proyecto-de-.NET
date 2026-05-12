@@ -5,7 +5,7 @@ namespace SGE.Dominio.Expedientes;
 
 public class Expediente
 {
-    public Guid Id { get; private set; } = Guid.NewGuid(); // Se genera solo [cite: 61, 73]
+    public Guid Id { get; private set; } = Guid.NewGuid();
     public Caratula Caratula { get; private set; }
     public DateTime FechaCreacion { get; private set; } = DateTime.Now;
     public DateTime FechaUltimaModificacion { get; private set; } = DateTime.Now;
@@ -18,7 +18,6 @@ public class Expediente
         UsuarioUltimoCambio = usuarioId;
     }
 
-    [cite_start]// El Expediente decide su estado según la etiqueta del trámite [cite: 100, 101]
     public bool ActualizarEstado(EtiquetaTramite? ultimaEtiqueta, Guid idUsuario)
     {
         var estadoAnterior = Estado;

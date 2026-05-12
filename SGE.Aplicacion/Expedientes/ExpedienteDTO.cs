@@ -1,4 +1,4 @@
-namespace SGE.Repositorio.Aplicacion;
+namespace SGE.Aplicacion;
 
 public record ExpedienteDTO(
     int Id, 
