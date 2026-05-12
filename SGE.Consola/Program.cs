@@ -101,11 +101,14 @@ var authService = new FakeAutorizacionService();
 // Instanciamos los Casos de Uso pasándoles los repositorios
 var altaExpediente = new AltaExpedienteUseCase(repoExpediente, authService);
 var altaTramite = new AltaTramiteUseCase(repoTramite, repoExpediente, authService);
-
+var listarExpedientes = new ListarExpedientesUseCase(repoExpediente);
 // 2. MENÚ DE USUARIO
 bool salir = false;
 while (!salir)
-{
+{   Console.WriteLine("\n====================================");
+    Console.WriteLine("   SGE: GESTIÓN DE EXPEDIENTES");
+    Console.WriteLine("====================================");
+
     Console.WriteLine("\n--- SISTEMA DE GESTIÓN DE EXPEDIENTES (SGE) ---");
     Console.WriteLine("1. Dar de alta un expediente");
     Console.WriteLine("2. Dar de alta un trámite");
@@ -119,14 +122,40 @@ while (!salir)
             Console.Write("Ingrese la carátula del expediente: ");
             string? caratula = Console.ReadLine();
             try {
+                // Usamos un Guid fijo o aleatorio para el usuario por ahora
                 altaExpediente.Ejecutar(caratula ?? "", Guid.NewGuid());
                 Console.WriteLine("¡Expediente creado con éxito!");
             } catch (Exception e) { Console.WriteLine($"Error: {e.Message}"); }
             break;
 
         case "2":
-            // Aquí pedirías el ID del expediente y el contenido del trámite
-            Console.WriteLine("Funcionalidad de Trámite pendiente de entrada de datos...");
+            Console.Write("Ingrese el ID del expediente (GUID): ");
+            if (Guid.TryParse(Console.ReadLine(), out Guid expId)) {
+                Console.Write("Ingrese el contenido del trámite: ");
+                string contenido = Console.ReadLine() ?? "";
+                
+                // Mostramos opciones de etiquetas (puedes Hardcodear una por ahora)
+                Console.WriteLine("Etiqueta: 1.Resolucion, 2.PaseAEstudio, 3.PaseAlArchivo");
+                // Aquí podrías parsear la etiqueta, por ahora mandamos 'PaseAEstudio' de prueba
+                try {
+                    altaTramite.Ejecutar(expId, EtiquetaTramite.PaseAEstudio, contenido, Guid.NewGuid());
+                    Console.WriteLine("¡Trámite cargado y estado de expediente actualizado!");
+                } catch (Exception e) { Console.WriteLine($"Error: {e.Message}"); }
+            } else {
+                Console.WriteLine("ID de expediente no válido.");
+            }
+            break;
+
+        case "3":
+            Console.WriteLine("\n--- LISTADO DE EXPEDIENTES ---");
+            var lista = listarExpedientes.Ejecutar();
+            if (!lista.Any()) {
+                Console.WriteLine("No hay expedientes cargados.");
+            } else {
+                foreach (var e in lista) {
+                    Console.WriteLine($"ID: {e.Id} | Carátula: {e.Caratula} | Estado: {e.Estado}");
+                }
+            }
             break;
 
         case "0": salir = true; break;
