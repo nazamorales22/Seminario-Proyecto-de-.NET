@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\SGE.Repositorio.Aplicacion\SGE.Repositorio.Aplicacion.csproj" />
-    <ProjectReference Include="..\SGE.Repositorio.Infraestructura\SGE.Repositorio.Infraestructura.csproj" />
+    <ProjectReference Include="..\SGE.Aplicacion\SGE.Aplicacion.csproj" />
+    <ProjectReference Include="..\SGE.Infraestructura\SGE.Infraestructura.csproj" />
     <ProjectReference Include="..\SGE.Aplicacion\SGE.Aplicacion.csproj" />
   </ItemGroup>
 

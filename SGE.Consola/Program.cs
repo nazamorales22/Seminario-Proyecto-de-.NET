@@ -1,60 +1,6 @@
-/*using SGE.Repositorio.Aplicacion;
-using SGE.Repositorio.Infraestructura;
+/*
 
-// 1. Inicializamos los "fierros" (Infraestructura)
-var repoExpediente = new ExpedienteRepositoryTxt();
-
-// 2. Inicializamos los "cerebros" (Casos de Uso)
-var agregarExpUseCase = new AgregarExpedienteUseCase(repoExpediente);
-var listarExpUseCase = new ListarExpedientesUseCase(repoExpediente);
-
-bool salir = false;
-while (!salir)
-{
-    Console.WriteLine("\n--- SGE: Gestión de Expedientes ---");
-    Console.WriteLine("1. Agregar Expediente");
-    Console.WriteLine("2. Listar Expedientes");
-    Console.WriteLine("3. Salir");
-    Console.Write("Seleccione una opción: ");
-
-    string? opcion = Console.ReadLine();
-
-    switch (opcion)
-    {
-        case "1":
-            Console.Write("Ingrese la carátula: ");
-            string caratula = Console.ReadLine() ?? "";
-            
-            // Usamos el DTO para enviar datos a la capa de aplicación
-            var nuevoDto = new ExpedienteDTO(0, caratula, DateTime.Now, "", 14748); 
-            
-            try {
-                agregarExpUseCase.Ejecutar(nuevoDto);
-                Console.WriteLine("¡Expediente guardado con éxito!");
-            } catch (Exception ex) {
-                Console.WriteLine($"Error: {ex.Message}");
-            }
-            break;
-
-        case "2":
-            var lista = listarExpUseCase.Ejecutar();
-            Console.WriteLine("\n--- Listado de Expedientes ---");
-            foreach (var e in lista) {
-                Console.WriteLine($"ID: {e.Id} | Carátula: {e.Caratula} | Estado: {e.Estado}");
-            }
-            break;
-
-        case "3":
-            salir = true;
-            break;
-
-        default:
-            Console.WriteLine("Opción no válida.");
-            break;
-    }
-}*/
-
-using SGE.Repositorio.Aplicacion;
+using SGE.Aplicacion;
 using SGE.Repositorio.Infraestructura;
 
 // --- CONFIGURACIÓN DE LA INFRAESTRUCTURA ---
@@ -136,4 +82,59 @@ while (!salir)
         // Capturamos errores de validación (carátula vacía, expediente inexistente, etc.)
         Console.WriteLine($"\n[ERROR] {ex.Message}");
     }
+}*/
+
+using SGE.Aplicacion.Expedientes;
+using SGE.Aplicacion.Tramites;
+using SGE.Infraestructura;
+using SGE.Dominio.Tramites;
+
+// 1. CONFIGURACIÓN (Inyección de dependencias manual)
+// Aquí creamos los "motores" que graban en el disco de tu Linux Mint
+var repoExpediente = new ExpedienteRepositoryTxt();
+var repoTramite = new TramiteRepositoryTxt();
+
+// Creamos un servicio de autorización "falso" por ahora (que siempre dice que sí)
+// Luego lo podés completar con la lógica real
+var authService = new FakeAutorizacionService(); 
+
+// Instanciamos los Casos de Uso pasándoles los repositorios
+var altaExpediente = new AltaExpedienteUseCase(repoExpediente, authService);
+var altaTramite = new AltaTramiteUseCase(repoTramite, repoExpediente, authService);
+
+// 2. MENÚ DE USUARIO
+bool salir = false;
+while (!salir)
+{
+    Console.WriteLine("\n--- SISTEMA DE GESTIÓN DE EXPEDIENTES (SGE) ---");
+    Console.WriteLine("1. Dar de alta un expediente");
+    Console.WriteLine("2. Dar de alta un trámite");
+    Console.WriteLine("3. Listar expedientes");
+    Console.WriteLine("0. Salir");
+    Console.Write("Seleccione una opción: ");
+
+    switch (Console.ReadLine())
+    {
+        case "1":
+            Console.Write("Ingrese la carátula del expediente: ");
+            string? caratula = Console.ReadLine();
+            try {
+                altaExpediente.Ejecutar(caratula ?? "", Guid.NewGuid());
+                Console.WriteLine("¡Expediente creado con éxito!");
+            } catch (Exception e) { Console.WriteLine($"Error: {e.Message}"); }
+            break;
+
+        case "2":
+            // Aquí pedirías el ID del expediente y el contenido del trámite
+            Console.WriteLine("Funcionalidad de Trámite pendiente de entrada de datos...");
+            break;
+
+        case "0": salir = true; break;
+        default: Console.WriteLine("Opción no válida."); break;
+    }
+}
+
+// Clase auxiliar temporal para que el código compile
+public class FakeAutorizacionService : SGE.Aplicacion.Autorizacion.IAutorizacionService {
+    public bool PoseeElPermiso(Guid id, SGE.Aplicacion.Autorizacion.Permiso p) => true;
 }
