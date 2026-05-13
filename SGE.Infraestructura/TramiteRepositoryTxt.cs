@@ -1,5 +1,10 @@
 using SGE.Aplicacion.Tramites;
 using SGE.Dominio.Tramites;
+using SGE.Dominio.Comun;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace SGE.Infraestructura;
 
@@ -10,14 +15,15 @@ public class TramiteRepositoryTxt : ITramiteRepository
     public void Agregar(Tramite tramite)
     {
         using var sw = new StreamWriter(Archivo, true);
-        // Usamos UsuarioUltimoCambio y nos aseguramos de que el contenido se guarde como string
         sw.WriteLine($"{tramite.Id}|{tramite.ExpedienteId}|{tramite.Etiqueta}|{tramite.Contenido}|{tramite.UsuarioUltimoCambio}|{tramite.FechaCreacion}");
     }
 
     public void Eliminar(Guid id)
     {
         if (!File.Exists(Archivo)) return;
-        var lineas = File.ReadAllLines(Archivo).Where(l => Guid.Parse(l.Split('|')[0]) != id).ToList();
+        var lineas = File.ReadAllLines(Archivo)
+            .Where(l => Guid.Parse(l.Split('|')[0]) != id)
+            .ToList();
         File.WriteAllLines(Archivo, lineas);
     }
 
@@ -26,16 +32,30 @@ public class TramiteRepositoryTxt : ITramiteRepository
         if (!File.Exists(Archivo)) return Enumerable.Empty<Tramite>();
         
         return File.ReadAllLines(Archivo)
-            .Select(linea => {
-                var d = linea.Split('|');
-                // IMPORTANTE: El orden de los datos debe coincidir con el constructor de Tramite
-                return new Tramite(
-                    Guid.Parse(d[1]), // expedienteId
-                    (EtiquetaTramite)Enum.Parse(typeof(EtiquetaTramite), d[2]), // etiqueta
-                    new SGE.Dominio.Comun.ContenidoTramite(d[3]), // contenido
-                    Guid.Parse(d[4]) // usuarioId (que se asignará a UsuarioUltimoCambio en el constructor)
+            .Select(linea => linea.Split('|'))
+            .Where(d => d.Length >= 6 && Guid.Parse(d[1]) == expedienteId) 
+            .Select(d => {
+                return Tramite.Reconstruir(
+                    Guid.Parse(d[0]), 
+                    Guid.Parse(d[1]), 
+                    Enum.Parse<EtiquetaTramite>(d[2]), 
+                    new ContenidoTramite(d[3]),
+                    Guid.Parse(d[4]), 
+                    DateTime.Parse(d[5]) 
                 );
             })
-            .Where(t => t.ExpedienteId == expedienteId);
+            .ToList();
+    }
+
+    public void EliminarRelacionadosA(Guid expedienteId)
+    {
+        if (!File.Exists(Archivo)) return;
+        var lineasRestantes = File.ReadAllLines(Archivo)
+            .Where(l => {
+                var datos = l.Split('|');
+                return Guid.Parse(datos[1]) != expedienteId;
+            })
+            .ToList();
+        File.WriteAllLines(Archivo, lineasRestantes);
     }
 }

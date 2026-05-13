@@ -6,5 +6,6 @@ public interface ITramiteRepository
 {
     void Agregar(Tramite tramite);
     void Eliminar(Guid id);
-    IEnumerable<Tramite> ObtenerPorExpedienteId(Guid expedienteId); // Filtro por expediente [cite: 118]
+    void EliminarRelacionadosA(Guid expedienteId);
+    IEnumerable<Tramite> ObtenerPorExpedienteId(Guid expedienteId);
 }
