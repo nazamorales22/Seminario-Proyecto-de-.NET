@@ -54,4 +54,10 @@ public class Expediente
         }
         return false;
     }
+    public void ActualizarCaratula(Caratula nuevaCaratula, Guid usuarioId)
+{
+    this.Caratula = nuevaCaratula;
+    this.UsuarioUltimoCambio = usuarioId;
+    this.FechaUltimaModificacion = DateTime.Now;
+}
 }

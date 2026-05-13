@@ -21,6 +21,9 @@ var listarExpedientes = new ListarExpedientesUseCase(repoExpediente);
 
 // ERROR CORREGIDO: Aquí usamos 'repoExpediente' (el nombre que definiste arriba)
 var bajaExpedienteUseCase = new BajaExpedienteUseCase(repoExpediente, repoTramite, authService);
+// Instancio el caso de uso para modifica
+var modificarExpediente = new ModificarExpedienteUseCase(repoExpediente, authService);
+
 
 // 2. MENÚ DE USUARIO
 bool salir = false;
@@ -33,6 +36,7 @@ while (!salir)
     Console.WriteLine("2. Dar de alta un trámite");
     Console.WriteLine("3. Listar expedientes");
     Console.WriteLine("4. Dar de baja un Expediente (Cascada)");
+    Console.WriteLine("5. Modificar un Expediente");
     Console.WriteLine("0. Salir");
     Console.Write("Seleccione una opción: ");
 
@@ -94,6 +98,19 @@ while (!salir)
                   Console.WriteLine("⚠️ ID inválido. Debe ser un formato Guid.");
              }
              break;
+
+
+        case "5":
+                   Console.Write("Ingrese el ID del expediente a modificar: ");
+                   if (Guid.TryParse(Console.ReadLine(), out Guid idMod)) {
+                        Console.Write("Ingrese la nueva carátula: ");
+                        string nuevaC = Console.ReadLine() ?? "";
+                      try {
+                           modificarExpediente.Ejecutar(idMod, nuevaC, Guid.NewGuid());
+                           Console.WriteLine("✅ Expediente modificado con éxito.");
+                    } catch (Exception e) { Console.WriteLine($"❌ Error: {e.Message}"); }
+    }
+                    break;
 
         case "0": salir = true; break;
         default: Console.WriteLine("Opción no válida."); break;
