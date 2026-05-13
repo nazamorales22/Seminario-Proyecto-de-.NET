@@ -30,24 +30,42 @@ public class ExpedienteRepositoryTxt : IExpedienteRepository
         File.WriteAllLines(Archivo, nuevaLista);
     }
 
-    public void Eliminar(Guid id)
-    {
-        if (!File.Exists(Archivo)) return;
-        var lineas = File.ReadAllLines(Archivo).Where(l => Guid.Parse(l.Split('|')[0]) != id);
-        File.WriteAllLines(Archivo, lineas);
-    }
+public void Eliminar(Guid id)
+{
+    if (!File.Exists("expedientes.txt")) return;
+
+    // 1. Leemos todas las líneas
+    var lineas = File.ReadAllLines("expedientes.txt");
+
+    // 2. Filtramos: nos quedamos con las que NO coincidan con el ID
+    var lineasRestantes = lineas
+        .Where(linea => {
+            var datos = linea.Split('|');
+            // IMPORTANTE: Asegurate de que el ID sea el primer dato (pos 0)
+            return Guid.Parse(datos[0]) != id;
+        })
+        .ToList();
+
+    // 3. SOBRESCRIBIMOS el archivo con las líneas que quedaron
+    File.WriteAllLines("expedientes.txt", lineasRestantes);
+}
 
     public Expediente? ObtenerPorId(Guid id) => ObtenerTodos().FirstOrDefault(e => e.Id == id);
 
-    public IEnumerable<Expediente> ObtenerTodos()
-    {
-        if (!File.Exists(Archivo)) return Enumerable.Empty<Expediente>();
-        
-        return File.ReadAllLines(Archivo).Select(linea => {
-            var datos = linea.Split('|');
-            // Al reconstruir, el Id será uno nuevo (Guid.NewGuid) porque es private set.
-            // Para el alcance de este TP, esto es aceptable.
-            return new Expediente(new Caratula(datos[1]), Guid.Parse(datos[2]));
-        });
-    }
+public IEnumerable<Expediente> ObtenerTodos()
+{
+    if (!File.Exists(Archivo)) return Enumerable.Empty<Expediente>();
+    
+    return File.ReadAllLines(Archivo).Select(linea => {
+        var datos = linea.Split('|');
+        // Usamos los datos del archivo, especialmente el ID (datos[0])
+        return Expediente.Reconstruir(
+            Guid.Parse(datos[0]), 
+            new Caratula(datos[1]), 
+            Guid.Parse(datos[2]),
+            Enum.Parse<EstadoExpediente>(datos[3]),
+            DateTime.Parse(datos[4])
+        );
+    }).ToList();
+}
 }
