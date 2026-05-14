@@ -4,6 +4,7 @@ using SGE.Aplicacion.Tramites;
 using SGE.Infraestructura;
 using SGE.Dominio.Tramites;
 using SGE.Dominio.Expedientes;
+using SGE.Dominio.Comun;
 
 // 1. CONFIGURACIÓN (Inyección de dependencias manual)
 // Usamos los nombres de variables que ya tenés definidos
@@ -25,6 +26,12 @@ var bajaExpedienteUseCase = new BajaExpedienteUseCase(repoExpediente, repoTramit
 var modificarExpediente = new ModificarExpedienteUseCase(repoExpediente, authService);
 
 
+var actualizacionEstado = new ActualizacionEstadoExpedienteService(repoExpediente, repoTramite);
+var modificarTramite = new ModificarTramiteUseCase(repoTramite, authService, actualizacionEstado);
+
+var listarTramites = new ListarTramitesUseCase(repoTramite);
+var cambiarEstadoManual = new CambiarEstadoExpedienteUseCase(repoExpediente, authService);
+
 // 2. MENÚ DE USUARIO
 bool salir = false;
 while (!salir)
@@ -36,7 +43,10 @@ while (!salir)
     Console.WriteLine("2. Dar de alta un trámite");
     Console.WriteLine("3. Listar expedientes");
     Console.WriteLine("4. Dar de baja un Expediente (Cascada)");
-    Console.WriteLine("5. Modificar cáratula de un Expediente");
+    Console.WriteLine("5. Modificar un Expediente");
+    Console.WriteLine("6. Modificar un trámite");
+    Console.WriteLine("7. Listar trámites de un expediente");
+    Console.WriteLine("8. Cambiar estado de expediente (Manual)");
     Console.WriteLine("0. Salir");
     Console.Write("Seleccione una opción: ");
 
@@ -112,8 +122,63 @@ while (!salir)
     }
                     break;
 
+        case "6":
+                Console.Write("Ingrese el ID del trámite a modificar: ");
+                if (Guid.TryParse(Console.ReadLine(), out Guid idTramite))
+                {
+                    Console.Write("Ingrese el nuevo contenido: ");
+                    string nuevoContenido = Console.ReadLine() ?? "";
+                    Console.Write("Ingrese la nueva etiqueta (0=EscritoPresentado, 1=PaseAEstudio, 2=Despacho, 3=Resolucion, 4=Notificacion, 5=PaseAlArchivo): ");
+                    if (Enum.TryParse<EtiquetaTramite>(Console.ReadLine(), out EtiquetaTramite etiqueta))
+                    {
+                        try {
+                            modificarTramite.Ejecutar(idTramite, etiqueta, new ContenidoTramite(nuevoContenido), Guid.NewGuid());
+                            Console.WriteLine("✅ Trámite modificado con éxito.");
+                        } catch (Exception e) { Console.WriteLine($"❌ Error: {e.Message}"); }
+                    }
+                    else Console.WriteLine("⚠️ Etiqueta no válida.");
+                }
+                else Console.WriteLine("⚠️ ID inválido.");
+        break;
+
+        case "7":
+            Console.Write("Ingrese el ID del expediente: ");
+            if (Guid.TryParse(Console.ReadLine(), out Guid idExpLista))
+            {
+                try {
+                    var tramites = listarTramites.Ejecutar(idExpLista);
+                    foreach (var t in tramites)
+                        Console.WriteLine($"ID: {t.Id} | Etiqueta: {t.Etiqueta} | Contenido: {t.Contenido}");
+                } catch (Exception e) { Console.WriteLine($"❌ Error: {e.Message}"); }
+            }
+            else Console.WriteLine("⚠️ ID inválido.");
+        break;
+
+        case "8":
+            Console.Write("Ingrese el ID del expediente: ");
+             if (Guid.TryParse(Console.ReadLine(), out Guid idExp)) 
+            {
+             // Mostramos los estados disponibles para ayudar al usuario
+            Console.WriteLine("Estados: 0= RecienIniciado, 1= ParaResolver, 2= ConResolucion, 3= EnNotificacion, 4= Finalizado");
+            Console.Write("Seleccione el número del nuevo estado: ");
+        
+            if (Enum.TryParse<EstadoExpediente>(Console.ReadLine(), out EstadoExpediente nuevoEstado)) 
+            {
+                try {
+                // Ejecutamos el caso de uso
+                    cambiarEstadoManual.Ejecutar(idExp, nuevoEstado, Guid.NewGuid());
+                    Console.WriteLine("✅ Estado actualizado correctamente.");
+                } 
+                catch (Exception ex) { Console.WriteLine($"❌ Error: {ex.Message}"); }
+            } 
+            else Console.WriteLine("⚠️ Estado no válido.");
+            } 
+            else Console.WriteLine("⚠️ ID de expediente inválido.");
+        break;
+
         case "0": salir = true; break;
         default: Console.WriteLine("Opción no válida."); break;
+
     }
 }
 
