@@ -36,7 +36,7 @@ while (!salir)
     Console.WriteLine("2. Dar de alta un trámite");
     Console.WriteLine("3. Listar expedientes");
     Console.WriteLine("4. Dar de baja un Expediente (Cascada)");
-    Console.WriteLine("5. Modificar un Expediente");
+    Console.WriteLine("5. Modificar cáratula de un Expediente");
     Console.WriteLine("0. Salir");
     Console.Write("Seleccione una opción: ");
 
