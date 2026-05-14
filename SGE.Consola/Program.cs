@@ -30,6 +30,7 @@ var actualizacionEstado = new ActualizacionEstadoExpedienteService(repoExpedient
 var modificarTramite = new ModificarTramiteUseCase(repoTramite, authService, actualizacionEstado);
 
 var listarTramites = new ListarTramitesUseCase(repoTramite);
+var cambiarEstadoManual = new CambiarEstadoExpedienteUseCase(repoExpediente, authService);
 
 // 2. MENÚ DE USUARIO
 bool salir = false;
@@ -45,6 +46,7 @@ while (!salir)
     Console.WriteLine("5. Modificar un Expediente");
     Console.WriteLine("6. Modificar un trámite");
     Console.WriteLine("7. Listar trámites de un expediente");
+    Console.WriteLine("8. Cambiar estado de expediente (Manual)");
     Console.WriteLine("0. Salir");
     Console.Write("Seleccione una opción: ");
 
@@ -152,9 +154,31 @@ while (!salir)
             else Console.WriteLine("⚠️ ID inválido.");
         break;
 
+        case "8":
+            Console.Write("Ingrese el ID del expediente: ");
+             if (Guid.TryParse(Console.ReadLine(), out Guid idExp)) 
+            {
+             // Mostramos los estados disponibles para ayudar al usuario
+            Console.WriteLine("Estados: 0= RecienIniciado, 1= ParaResolver, 2= ConResolucion, 3= EnNotificacion, 4= Finalizado");
+            Console.Write("Seleccione el número del nuevo estado: ");
+        
+            if (Enum.TryParse<EstadoExpediente>(Console.ReadLine(), out EstadoExpediente nuevoEstado)) 
+            {
+                try {
+                // Ejecutamos el caso de uso
+                    cambiarEstadoManual.Ejecutar(idExp, nuevoEstado, Guid.NewGuid());
+                    Console.WriteLine("✅ Estado actualizado correctamente.");
+                } 
+                catch (Exception ex) { Console.WriteLine($"❌ Error: {ex.Message}"); }
+            } 
+            else Console.WriteLine("⚠️ Estado no válido.");
+            } 
+            else Console.WriteLine("⚠️ ID de expediente inválido.");
+        break;
 
         case "0": salir = true; break;
         default: Console.WriteLine("Opción no válida."); break;
+
     }
 }
 
