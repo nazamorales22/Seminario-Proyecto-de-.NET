@@ -1,11 +1,8 @@
 
-
+using SGE.Aplicacion.Autorizacion;
 using SGE.Dominio.Expedientes;
 using SGE.Dominio.Tramites;
 using SGE.Dominio.Comun;
-using SGE.Aplicacion.Autorizacion;
-using SGE.Aplicacion.Expedientes;
-
 namespace SGE.Aplicacion.Tramites;
 
 public class AltaTramiteUseCase(

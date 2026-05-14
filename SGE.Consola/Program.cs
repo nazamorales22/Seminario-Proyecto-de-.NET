@@ -31,7 +31,10 @@ var modificarTramite = new ModificarTramiteUseCase(repoTramite, authService, act
 
 var listarTramites = new ListarTramitesUseCase(repoTramite);
 var cambiarEstadoManual = new CambiarEstadoExpedienteUseCase(repoExpediente, authService);
-
+// --- NUEVOS CASOS DE USO FASE 2 ---
+var listarPorEstado = new ListarExpedientesPorEstadoUseCase(repoExpediente);
+// Este lo crearemos a continuación
+var consultarPorEtiqueta = new ConsultarExpedientesPorEtiquetaUseCase(repoExpediente, repoTramite);
 // 2. MENÚ DE USUARIO
 bool salir = false;
 while (!salir)
@@ -47,6 +50,8 @@ while (!salir)
     Console.WriteLine("6. Modificar un trámite");
     Console.WriteLine("7. Listar trámites de un expediente");
     Console.WriteLine("8. Cambiar estado de expediente (Manual)");
+    Console.WriteLine("9. Informe: Expedientes por estado");
+    Console.WriteLine("10. Informe: Expedientes con trámites de tipo...");
     Console.WriteLine("0. Salir");
     Console.Write("Seleccione una opción: ");
 
@@ -175,10 +180,41 @@ while (!salir)
             } 
             else Console.WriteLine("⚠️ ID de expediente inválido.");
         break;
+        
+        case "9":
+             Console.WriteLine("\n--- INFORME: EXPEDIENTES POR ESTADO ---");
+             Console.WriteLine("0: RecienIniciado, 1: ParaResolver, 2: ConResolucion, 3: EnNotificacion, 4: Finalizado");
+             Console.Write("Seleccione el estado: ");
+             if (Enum.TryParse<EstadoExpediente>(Console.ReadLine(), out EstadoExpediente estFiltro))
+             {
+                var filtrados = listarPorEstado.Ejecutar(estFiltro);
+                Console.WriteLine($"\nResultados ({estFiltro}):");
+                foreach (var e in filtrados) Console.WriteLine($"- {e.Caratula} (ID: {e.Id})");
+                if (!filtrados.Any()) Console.WriteLine("No se encontraron resultados.");
+    }
+    break;
+
+        case "10":
+            Console.WriteLine("\n--- INFORME: EXPEDIENTES POR TIPO DE TRÁMITE ---");
+            Console.WriteLine("0: Escrito, 1: PaseAEstudio, 2: Despacho, 3: Resolucion, 4: Notificacion, 5: Archivo");
+            Console.Write("Seleccione la etiqueta de trámite: ");
+            if (Enum.TryParse<EtiquetaTramite>(Console.ReadLine(), out EtiquetaTramite etiFiltro))
+            {
+                var filtrados = consultarPorEtiqueta.Ejecutar(etiFiltro);
+                Console.WriteLine($"\nExpedientes que tienen trámites de tipo [{etiFiltro}]:");
+                foreach (var e in filtrados) Console.WriteLine($"- {e.Caratula} (ID: {e.Id})");
+                 if (!filtrados.Any()) Console.WriteLine("No se encontraron expedientes con esos trámites.");
+            }
+    break;
+
+
+
+
+
 
         case "0": salir = true; break;
         default: Console.WriteLine("Opción no válida."); break;
-
+        
     }
 }
 

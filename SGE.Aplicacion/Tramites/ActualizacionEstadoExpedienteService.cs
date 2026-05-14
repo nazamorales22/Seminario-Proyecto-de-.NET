@@ -1,6 +1,6 @@
-using SGE.Aplicacion.Expedientes;
+// la cmbiamos using SGE.Aplicacion.Expedientes;
 using SGE.Dominio.Tramites;
-
+using SGE.Dominio.Expedientes;
 namespace SGE.Aplicacion.Tramites;
 
 public class ActualizacionEstadoExpedienteService

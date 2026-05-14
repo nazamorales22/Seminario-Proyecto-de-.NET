@@ -1,6 +1,8 @@
 using SGE.Aplicacion.Autorizacion;
 using SGE.Dominio.Comun;
 using SGE.Aplicacion.Tramites;
+using SGE.Dominio.Expedientes;
+using SGE.Dominio.Tramites;        // <--- AGREGÁ ESTO
 
 namespace SGE.Aplicacion.Expedientes;
 

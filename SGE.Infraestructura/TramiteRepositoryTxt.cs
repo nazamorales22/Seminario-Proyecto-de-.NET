@@ -108,4 +108,5 @@ public class TramiteRepositoryTxt : ITramiteRepository
         File.WriteAllLines(Archivo, tramites.Select(t => 
             $"{t.Id}|{t.ExpedienteId}|{t.Etiqueta}|{t.Contenido}|{t.UsuarioUltimoCambio}|{t.FechaCreacion}|{t.FechaUltimaModificacion}"));
     }
+
 }
