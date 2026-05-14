@@ -11,10 +11,13 @@ public class ListarTramitesUseCase(ITramiteRepository repositorio)
                 Id = t.Id, 
                 ExpedienteId = t.ExpedienteId, 
                 // Usamos ToString() para convertir el Value Object a string para el DTO
-                Contenido = t.Contenido.ToString() ?? "", 
+                //Contenido = t.Contenido.ToString() ?? "", 
+                Contenido = t.Contenido.Valor,
                 FechaHora = t.FechaCreacion, 
                 // Mapeamos UsuarioUltimoCambio (Dominio) a IdUsuario (DTO)
-                IdUsuario = t.UsuarioUltimoCambio 
+                IdUsuario = t.UsuarioUltimoCambio,
+                Etiqueta = t.Etiqueta 
+
             })
             .ToList();
     }
