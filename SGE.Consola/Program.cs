@@ -4,6 +4,7 @@ using SGE.Aplicacion.Tramites;
 using SGE.Infraestructura;
 using SGE.Dominio.Tramites;
 using SGE.Dominio.Expedientes;
+using SGE.Dominio.Comun;
 
 // 1. CONFIGURACIÓN (Inyección de dependencias manual)
 // Usamos los nombres de variables que ya tenés definidos
@@ -25,6 +26,11 @@ var bajaExpedienteUseCase = new BajaExpedienteUseCase(repoExpediente, repoTramit
 var modificarExpediente = new ModificarExpedienteUseCase(repoExpediente, authService);
 
 
+var actualizacionEstado = new ActualizacionEstadoExpedienteService(repoExpediente, repoTramite);
+var modificarTramite = new ModificarTramiteUseCase(repoTramite, authService, actualizacionEstado);
+
+var listarTramites = new ListarTramitesUseCase(repoTramite);
+
 // 2. MENÚ DE USUARIO
 bool salir = false;
 while (!salir)
@@ -37,6 +43,8 @@ while (!salir)
     Console.WriteLine("3. Listar expedientes");
     Console.WriteLine("4. Dar de baja un Expediente (Cascada)");
     Console.WriteLine("5. Modificar un Expediente");
+    Console.WriteLine("6. Modificar un trámite");
+    Console.WriteLine("7. Listar trámites de un expediente");
     Console.WriteLine("0. Salir");
     Console.Write("Seleccione una opción: ");
 
@@ -111,6 +119,39 @@ while (!salir)
                     } catch (Exception e) { Console.WriteLine($"❌ Error: {e.Message}"); }
     }
                     break;
+
+        case "6":
+                Console.Write("Ingrese el ID del trámite a modificar: ");
+                if (Guid.TryParse(Console.ReadLine(), out Guid idTramite))
+                {
+                    Console.Write("Ingrese el nuevo contenido: ");
+                    string nuevoContenido = Console.ReadLine() ?? "";
+                    Console.Write("Ingrese la nueva etiqueta (0=EscritoPresentado, 1=PaseAEstudio, 2=Despacho, 3=Resolucion, 4=Notificacion, 5=PaseAlArchivo): ");
+                    if (Enum.TryParse<EtiquetaTramite>(Console.ReadLine(), out EtiquetaTramite etiqueta))
+                    {
+                        try {
+                            modificarTramite.Ejecutar(idTramite, etiqueta, new ContenidoTramite(nuevoContenido), Guid.NewGuid());
+                            Console.WriteLine("✅ Trámite modificado con éxito.");
+                        } catch (Exception e) { Console.WriteLine($"❌ Error: {e.Message}"); }
+                    }
+                    else Console.WriteLine("⚠️ Etiqueta no válida.");
+                }
+                else Console.WriteLine("⚠️ ID inválido.");
+        break;
+
+        case "7":
+            Console.Write("Ingrese el ID del expediente: ");
+            if (Guid.TryParse(Console.ReadLine(), out Guid idExpLista))
+            {
+                try {
+                    var tramites = listarTramites.Ejecutar(idExpLista);
+                    foreach (var t in tramites)
+                        Console.WriteLine($"ID: {t.Id} | Etiqueta: {t.Etiqueta} | Contenido: {t.Contenido}");
+                } catch (Exception e) { Console.WriteLine($"❌ Error: {e.Message}"); }
+            }
+            else Console.WriteLine("⚠️ ID inválido.");
+        break;
+
 
         case "0": salir = true; break;
         default: Console.WriteLine("Opción no válida."); break;
