@@ -60,4 +60,10 @@ public class Expediente
     this.UsuarioUltimoCambio = usuarioId;
     this.FechaUltimaModificacion = DateTime.Now;
 }
+    public void CambiarEstado(EstadoExpediente nuevoEstado, Guid idUsuario)
+    {
+        this.Estado = nuevoEstado;
+        this.UsuarioUltimoCambio = idUsuario;
+        this.FechaUltimaModificacion = DateTime.Now;
+    }
 }
