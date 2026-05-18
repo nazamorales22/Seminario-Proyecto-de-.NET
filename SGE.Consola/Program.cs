@@ -217,26 +217,34 @@ while (!salir)
              Console.WriteLine("\n--- INFORME: EXPEDIENTES POR ESTADO ---");
              Console.WriteLine("0: RecienIniciado, 1: ParaResolver, 2: ConResolucion, 3: EnNotificacion, 4: Finalizado");
              Console.Write("Seleccione el estado: ");
-             if (Enum.TryParse<EstadoExpediente>(Console.ReadLine(), out EstadoExpediente estFiltro))
+
+             string? leerEstado = Console.ReadLine();// Leemos la entrada del usuario para el estado del expediente
+             if (Enum.TryParse<EstadoExpediente>(leerEstado, out EstadoExpediente estFiltro )
+                && Enum.IsDefined(typeof(EstadoExpediente), estFiltro))
              {
                 var filtrados = listarPorEstado.Ejecutar(estFiltro);
                 Console.WriteLine($"\nResultados ({estFiltro}):");
                 foreach (var e in filtrados) Console.WriteLine($"- {e.Caratula} (ID: {e.Id})");
                 if (!filtrados.Any()) Console.WriteLine("No se encontraron resultados.");
-    }
+            }
+            else Console.WriteLine("Estado no válido.");
     break;
 
         case "11":
             Console.WriteLine("\n--- INFORME: EXPEDIENTES POR TIPO DE TRÁMITE ---");
             Console.WriteLine("0: Escrito, 1: PaseAEstudio, 2: Despacho, 3: Resolucion, 4: Notificacion, 5: Archivo");
             Console.Write("Seleccione la etiqueta de trámite: ");
-            if (Enum.TryParse<EtiquetaTramite>(Console.ReadLine(), out EtiquetaTramite etiFiltro))
+
+            string? leerEtiqueta = Console.ReadLine();// Leemos la entrada del usuario para la etiqueta de trámite
+            if (Enum.TryParse<EtiquetaTramite>(leerEtiqueta, out EtiquetaTramite etiFiltro)
+                && Enum.IsDefined(typeof(EtiquetaTramite), etiFiltro))
             {
                 var filtrados = consultarPorEtiqueta.Ejecutar(etiFiltro);
                 Console.WriteLine($"\nExpedientes que tienen trámites de tipo [{etiFiltro}]:");
                 foreach (var e in filtrados) Console.WriteLine($"- {e.Caratula} (ID: {e.Id})");
                  if (!filtrados.Any()) Console.WriteLine("No se encontraron expedientes con esos trámites.");
             }
+            else Console.WriteLine("Etiqueta no válida.");
     break;
 
         case "0": salir = true; break;
