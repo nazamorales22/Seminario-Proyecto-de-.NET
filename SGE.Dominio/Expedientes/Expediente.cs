@@ -25,13 +25,30 @@ public class Expediente
     }
 
     // El método que soluciona tu problema de la Baja
-    public static Expediente Reconstruir(Guid id, Caratula caratula, Guid usuarioId, EstadoExpediente estado, DateTime fecha)
+    // public static Expediente Reconstruir(Guid id, Caratula caratula, Guid usuarioId, EstadoExpediente estado, DateTime fecha)
+    // {
+    //     var exp = new Expediente(caratula, usuarioId);
+    //     exp.Id = id; // Ahora sí pisa el ID generado con el del archivo
+    //     exp.Estado = estado;
+    //     exp.FechaCreacion = fecha;
+    //     return exp;
+    // }
+
+    // Constructor privado para RECONSTRUIR
+    private Expediente(Guid id, Caratula caratula, Guid usuarioId, EstadoExpediente estado, DateTime fechaCreacion, DateTime fechaUltimaModificacion)
     {
-        var exp = new Expediente(caratula, usuarioId);
-        exp.Id = id; // Ahora sí pisa el ID generado con el del archivo
-        exp.Estado = estado;
-        exp.FechaCreacion = fecha;
-        return exp;
+        Id = id;
+        Caratula = caratula;
+        UsuarioUltimoCambio = usuarioId;
+        Estado = estado;
+        FechaCreacion = fechaCreacion;
+        FechaUltimaModificacion = fechaUltimaModificacion;
+    }
+    
+    // Factory Method
+    public static Expediente Reconstruir(Guid id, Caratula caratula, Guid usuarioId, EstadoExpediente estado, DateTime fechaCreacion, DateTime fechaUltimaModificacion)
+    {
+        return new Expediente(id, caratula, usuarioId, estado, fechaCreacion, fechaUltimaModificacion);
     }
 
     public bool ActualizarEstado(EtiquetaTramite? ultimaEtiqueta, Guid idUsuario)

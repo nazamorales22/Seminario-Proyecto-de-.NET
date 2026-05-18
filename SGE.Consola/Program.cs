@@ -54,11 +54,11 @@ while (!salir)
     Console.WriteLine("1. Dar de alta un expediente");
     Console.WriteLine("2. Dar de alta un trámite");
     Console.WriteLine("3. Listar expedientes");
-    Console.WriteLine("4. Dar de baja un Expediente (Cascada)");
-    Console.WriteLine("5. Modificar un Expediente");
-    Console.WriteLine("6. Modificar un trámite");
-    Console.WriteLine("7. Listar trámites de un expediente");
-    Console.WriteLine("8. Dar de baja un trámite");
+    Console.WriteLine("4. Listar trámites de un expediente");
+    Console.WriteLine("5. Dar de baja un Expediente (Cascada)");
+    Console.WriteLine("6. Dar de baja un trámite");
+    Console.WriteLine("7. Modificar un Expediente");
+    Console.WriteLine("8. Modificar un trámite");    
     Console.WriteLine("9. Cambiar estado de expediente (Manual)");
     Console.WriteLine("10. Informe: Expedientes por estado");
     Console.WriteLine("11. Informe: Expedientes con trámites de tipo...");
@@ -101,6 +101,21 @@ while (!salir)
             break;
         
         case "4":
+            Console.WriteLine("\n--- LISTAR TRÁMITES DE UN EXPEDIENTE ---");
+            Console.Write("Ingrese el ID del expediente: ");
+            if (Guid.TryParse(Console.ReadLine(), out Guid idExpLista))
+            {
+                try {
+                    var tramites = listarTramites.Ejecutar(idExpLista);
+                    foreach (var t in tramites)
+                        Console.WriteLine($"ID: {t.Id} | Etiqueta: {t.Etiqueta} | Contenido: {t.Contenido}");
+                } catch (Exception e) { Console.WriteLine($"Error: {e.Message}"); }
+            }
+            else Console.WriteLine("ID inválido.");
+        break;
+
+
+        case "5":
              Console.WriteLine("\n--- BAJA DE EXPEDIENTE (CASCADA) ---");
              Console.Write("Ingrese el ID del expediente a eliminar: ");
              string? idInput = Console.ReadLine();
@@ -124,52 +139,8 @@ while (!salir)
              }
              break;
 
-
-        case "5":
-                   Console.Write("Ingrese el ID del expediente a modificar: ");
-                   if (Guid.TryParse(Console.ReadLine(), out Guid idMod)) {
-                        Console.Write("Ingrese la nueva carátula: ");
-                        string nuevaC = Console.ReadLine() ?? "";
-                      try {
-                           modificarExpediente.Ejecutar(idMod, nuevaC, Guid.NewGuid());
-                           Console.WriteLine("Expediente modificado con éxito.");
-                    } catch (Exception e) { Console.WriteLine($"Error: {e.Message}"); }
-    }
-                    break;
-
         case "6":
-                Console.Write("Ingrese el ID del trámite a modificar: ");
-                if (Guid.TryParse(Console.ReadLine(), out Guid idTramite))
-                {
-                    Console.Write("Ingrese el nuevo contenido: ");
-                    string nuevoContenido = Console.ReadLine() ?? "";
-                    Console.Write("Ingrese la nueva etiqueta (0=EscritoPresentado, 1=PaseAEstudio, 2=Despacho, 3=Resolucion, 4=Notificacion, 5=PaseAlArchivo): ");
-                    if (Enum.TryParse<EtiquetaTramite>(Console.ReadLine(), out EtiquetaTramite etiqueta))
-                    {
-                        try {
-                            modificarTramite.Ejecutar(idTramite, etiqueta, new ContenidoTramite(nuevoContenido), Guid.NewGuid());
-                            Console.WriteLine("Trámite modificado con éxito.");
-                        } catch (Exception e) { Console.WriteLine($"❌ Error: {e.Message}"); }
-                    }
-                    else Console.WriteLine("Etiqueta no válida.");
-                }
-                else Console.WriteLine("ID inválido.");
-        break;
-
-        case "7":
-            Console.Write("Ingrese el ID del expediente: ");
-            if (Guid.TryParse(Console.ReadLine(), out Guid idExpLista))
-            {
-                try {
-                    var tramites = listarTramites.Ejecutar(idExpLista);
-                    foreach (var t in tramites)
-                        Console.WriteLine($"ID: {t.Id} | Etiqueta: {t.Etiqueta} | Contenido: {t.Contenido}");
-                } catch (Exception e) { Console.WriteLine($"Error: {e.Message}"); }
-            }
-            else Console.WriteLine("ID inválido.");
-        break;
-
-        case "8":
+            Console.WriteLine("\n--- BAJA DE TRÁMITE ---");        
             Console.Write("Ingrese el ID del trámite a eliminar: ");
             if (Guid.TryParse(Console.ReadLine(), out Guid idBajaTramite))
             {
@@ -182,7 +153,45 @@ while (!salir)
         break;
 
 
+        case "7":
+            Console.WriteLine("\n--- MODIFICAR EXPEDIENTE ---");
+           Console.Write("Ingrese el ID del expediente a modificar: ");
+           if (Guid.TryParse(Console.ReadLine(), out Guid idMod)) {
+                Console.Write("Ingrese la nueva carátula: ");
+                string nuevaC = Console.ReadLine() ?? "";
+              try {
+                   modificarExpediente.Ejecutar(idMod, nuevaC, Guid.NewGuid());
+                   Console.WriteLine("Expediente modificado con éxito.");
+            } catch (Exception e) { Console.WriteLine($"Error: {e.Message}"); }
+           } else {
+                Console.WriteLine("ID de expediente no válido.");
+           }    
+         break;
+
+        case "8":
+                Console.WriteLine("\n--- MODIFICAR TRÁMITE ---");
+                Console.Write("Ingrese el ID del trámite a modificar: ");
+                if (Guid.TryParse(Console.ReadLine(), out Guid idTramite))
+                {
+                    Console.Write("Ingrese el nuevo contenido: ");
+                    string nuevoContenido = Console.ReadLine() ?? "";
+                    Console.Write("Ingrese la nueva etiqueta (0=EscritoPresentado, 1=PaseAEstudio, 2=Despacho, 3=Resolucion, 4=Notificacion, 5=PaseAlArchivo): ");
+                    if (Enum.TryParse<EtiquetaTramite>(Console.ReadLine(), out EtiquetaTramite etiqueta))
+                    {
+                        try {
+                            modificarTramite.Ejecutar(idTramite, etiqueta, new ContenidoTramite(nuevoContenido), Guid.NewGuid());
+                            Console.WriteLine("Trámite modificado con éxito.");
+                        } catch (Exception e) { Console.WriteLine($"Error: {e.Message}"); }
+                    }
+                    else Console.WriteLine("Etiqueta no válida.");
+                }
+                else Console.WriteLine("ID inválido.");
+        break;
+
+
+
         case "9":
+            Console.WriteLine("\n--- CAMBIAR ESTADO DE EXPEDIENTE (MANUAL) ---");
             Console.Write("Ingrese el ID del expediente: ");
              if (Guid.TryParse(Console.ReadLine(), out Guid idExp)) 
             {
@@ -229,11 +238,6 @@ while (!salir)
                  if (!filtrados.Any()) Console.WriteLine("No se encontraron expedientes con esos trámites.");
             }
     break;
-
-
-
-
-
 
         case "0": salir = true; break;
         default: Console.WriteLine("Opción no válida."); break;

@@ -15,7 +15,7 @@ public class ExpedienteRepositoryTxt : IExpedienteRepository
     public void Agregar(Expediente expediente)
     {
         using var sw = new StreamWriter(Archivo, true);
-        sw.WriteLine($"{expediente.Id}|{expediente.Caratula}|{expediente.UsuarioUltimoCambio}|{expediente.Estado}|{expediente.FechaCreacion}");
+        sw.WriteLine($"{expediente.Id}|{expediente.Caratula.Valor}|{expediente.UsuarioUltimoCambio}|{expediente.Estado}|{expediente.FechaCreacion}|{expediente.FechaUltimaModificacion}");
     }
 
     public void Modificar(Expediente expediente)
@@ -25,9 +25,7 @@ public class ExpedienteRepositoryTxt : IExpedienteRepository
         var nuevaLista = lineas.Select(linea => {
             var datos = linea.Split('|');
             if (datos.Length > 0 && Guid.Parse(datos[0]) == expediente.Id)
-            {
-                return $"{expediente.Id}|{expediente.Caratula}|{expediente.UsuarioUltimoCambio}|{expediente.Estado}|{expediente.FechaCreacion}";
-            }
+                return $"{expediente.Id}|{expediente.Caratula.Valor}|{expediente.UsuarioUltimoCambio}|{expediente.Estado}|{expediente.FechaCreacion}|{expediente.FechaUltimaModificacion}";
             return linea;
         }).ToList();
         File.WriteAllLines(Archivo, nuevaLista);
@@ -58,7 +56,8 @@ public class ExpedienteRepositoryTxt : IExpedienteRepository
                 new Caratula(datos[1]), 
                 Guid.Parse(datos[2]),
                 Enum.Parse<EstadoExpediente>(datos[3]),
-                DateTime.Parse(datos[4])
+                DateTime.Parse(datos[4]),
+                DateTime.Parse(datos[5]) 
             );
         }).ToList();
     }
