@@ -156,7 +156,8 @@ while (!salir)
         case "7":
             Console.WriteLine("\n--- MODIFICAR EXPEDIENTE ---");
            Console.Write("Ingrese el ID del expediente a modificar: ");
-           if (Guid.TryParse(Console.ReadLine(), out Guid idMod)) {
+           if (Guid.TryParse(Console.ReadLine(),  out Guid idMod)) // con el true hacemos que no distinga mayúsculas de minúsculas
+           {
                 Console.Write("Ingrese la nueva carátula: ");
                 string nuevaC = Console.ReadLine() ?? "";
               try {
@@ -169,23 +170,31 @@ while (!salir)
          break;
 
         case "8":
-                Console.WriteLine("\n--- MODIFICAR TRÁMITE ---");
-                Console.Write("Ingrese el ID del trámite a modificar: ");
-                if (Guid.TryParse(Console.ReadLine(), out Guid idTramite))
+            Console.WriteLine("\n--- MODIFICAR TRÁMITE ---");
+            Console.Write("Ingrese el ID del trámite a modificar: ");
+            if (Guid.TryParse(Console.ReadLine(), out Guid idTramite))
+            {
+                Console.Write("Ingrese el nuevo contenido: ");
+                string nuevoContenido = Console.ReadLine() ?? "";
+                
+                if (string.IsNullOrWhiteSpace(nuevoContenido)) 
                 {
-                    Console.Write("Ingrese el nuevo contenido: ");
-                    string nuevoContenido = Console.ReadLine() ?? "";
-                    Console.Write("Ingrese la nueva etiqueta (0=EscritoPresentado, 1=PaseAEstudio, 2=Despacho, 3=Resolucion, 4=Notificacion, 5=PaseAlArchivo): ");
-                    if (Enum.TryParse<EtiquetaTramite>(Console.ReadLine(), out EtiquetaTramite etiqueta))
-                    {
-                        try {
-                            modificarTramite.Ejecutar(idTramite, etiqueta, new ContenidoTramite(nuevoContenido), Guid.NewGuid());
-                            Console.WriteLine("Trámite modificado con éxito.");
-                        } catch (Exception e) { Console.WriteLine($"Error: {e.Message}"); }
-                    }
-                    else Console.WriteLine("Etiqueta no válida.");
+                    Console.WriteLine("Error: El contenido no puede estar vacío.");
+                    break;
                 }
-                else Console.WriteLine("ID inválido.");
+
+                Console.Write("Ingrese la nueva etiqueta (0=EscritoPresentado, 1=PaseAEstudio, 2=Despacho, 3=Resolucion, 4=Notificacion, 5=PaseAlArchivo): ");
+                if (Enum.TryParse<EtiquetaTramite>(Console.ReadLine(), true, out EtiquetaTramite etiqueta)
+                    && Enum.IsDefined(typeof(EtiquetaTramite), etiqueta))
+                {
+                    try {
+                        modificarTramite.Ejecutar(idTramite, etiqueta, new ContenidoTramite(nuevoContenido), Guid.NewGuid());
+                        Console.WriteLine("Trámite modificado con éxito.");
+                    } catch (Exception e) { Console.WriteLine($"Error: {e.Message}"); }
+                }
+                else Console.WriteLine("Etiqueta no válida.");
+            }
+            else Console.WriteLine("ID inválido.");
         break;
 
 
@@ -199,7 +208,8 @@ while (!salir)
             Console.WriteLine("Estados: 0= RecienIniciado, 1= ParaResolver, 2= ConResolucion, 3= EnNotificacion, 4= Finalizado");
             Console.Write("Seleccione el número del nuevo estado: ");
         
-            if (Enum.TryParse<EstadoExpediente>(Console.ReadLine(), out EstadoExpediente nuevoEstado)) 
+            if (Enum.TryParse<EstadoExpediente>(Console.ReadLine(),true,  out EstadoExpediente nuevoEstado)) // con el true hacemos que no distinga mayúsculas de minúsculas
+        
             {
                 try {
                 // Ejecutamos el caso de uso
