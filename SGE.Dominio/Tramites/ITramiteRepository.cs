@@ -8,6 +8,7 @@ public interface ITramiteRepository
     IEnumerable<Tramite> ObtenerPorExpedienteId(Guid expedienteId);
     void EliminarRelacionadosA(Guid expedienteId);
     
+    
     // AGREGÁ ESTAS DOS LÍNEAS:
     Tramite? ObtenerPorId(Guid id); 
     IEnumerable<Tramite> ObtenerTodos(); 

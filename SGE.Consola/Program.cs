@@ -31,12 +31,21 @@ var modificarTramite = new ModificarTramiteUseCase(repoTramite, authService, act
 
 var listarTramites = new ListarTramitesUseCase(repoTramite);
 var cambiarEstadoManual = new CambiarEstadoExpedienteUseCase(repoExpediente, authService);
+
 // --- NUEVOS CASOS DE USO FASE 2 ---
 var listarPorEstado = new ListarExpedientesPorEstadoUseCase(repoExpediente);
 // Este lo crearemos a continuación
 var consultarPorEtiqueta = new ConsultarExpedientesPorEtiquetaUseCase(repoExpediente, repoTramite);
+
+
+//eliminar tramite 
+var actualizacionEstadoporBajaDeTramite = new ActualizacionEstadoExpedienteService(repoExpediente, repoTramite);
+var bajaTramite = new BajaTramiteUseCase(repoTramite, authService, actualizacionEstadoporBajaDeTramite);
+
+
 // 2. MENÚ DE USUARIO
 bool salir = false;
+
 while (!salir)
 {   
     Console.WriteLine("\n====================================");
@@ -49,9 +58,10 @@ while (!salir)
     Console.WriteLine("5. Modificar un Expediente");
     Console.WriteLine("6. Modificar un trámite");
     Console.WriteLine("7. Listar trámites de un expediente");
-    Console.WriteLine("8. Cambiar estado de expediente (Manual)");
-    Console.WriteLine("9. Informe: Expedientes por estado");
-    Console.WriteLine("10. Informe: Expedientes con trámites de tipo...");
+    Console.WriteLine("8. Dar de baja un trámite");
+    Console.WriteLine("9. Cambiar estado de expediente (Manual)");
+    Console.WriteLine("10. Informe: Expedientes por estado");
+    Console.WriteLine("11. Informe: Expedientes con trámites de tipo...");
     Console.WriteLine("0. Salir");
     Console.Write("Seleccione una opción: ");
 
@@ -101,16 +111,16 @@ while (!salir)
                 {
                     Guid usuarioIdActivo = Guid.NewGuid(); 
                     bajaExpedienteUseCase.Ejecutar(idParaBorrar, usuarioIdActivo);
-                    Console.WriteLine("✅ Expediente y sus trámites asociados eliminados correctamente.");
+                    Console.WriteLine("Expediente y sus trámites asociados eliminados correctamente.");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"❌ Error: {ex.Message}"); // Error corregido: agregada la $
+                    Console.WriteLine($"Error: {ex.Message}"); // Error corregido: agregada la $
                 }
              }
              else
              {
-                  Console.WriteLine("⚠️ ID inválido. Debe ser un formato Guid.");
+                  Console.WriteLine("ID inválido. Debe ser un formato Guid.");
              }
              break;
 
@@ -122,8 +132,8 @@ while (!salir)
                         string nuevaC = Console.ReadLine() ?? "";
                       try {
                            modificarExpediente.Ejecutar(idMod, nuevaC, Guid.NewGuid());
-                           Console.WriteLine("✅ Expediente modificado con éxito.");
-                    } catch (Exception e) { Console.WriteLine($"❌ Error: {e.Message}"); }
+                           Console.WriteLine("Expediente modificado con éxito.");
+                    } catch (Exception e) { Console.WriteLine($"Error: {e.Message}"); }
     }
                     break;
 
@@ -138,12 +148,12 @@ while (!salir)
                     {
                         try {
                             modificarTramite.Ejecutar(idTramite, etiqueta, new ContenidoTramite(nuevoContenido), Guid.NewGuid());
-                            Console.WriteLine("✅ Trámite modificado con éxito.");
+                            Console.WriteLine("Trámite modificado con éxito.");
                         } catch (Exception e) { Console.WriteLine($"❌ Error: {e.Message}"); }
                     }
-                    else Console.WriteLine("⚠️ Etiqueta no válida.");
+                    else Console.WriteLine("Etiqueta no válida.");
                 }
-                else Console.WriteLine("⚠️ ID inválido.");
+                else Console.WriteLine("ID inválido.");
         break;
 
         case "7":
@@ -154,12 +164,25 @@ while (!salir)
                     var tramites = listarTramites.Ejecutar(idExpLista);
                     foreach (var t in tramites)
                         Console.WriteLine($"ID: {t.Id} | Etiqueta: {t.Etiqueta} | Contenido: {t.Contenido}");
-                } catch (Exception e) { Console.WriteLine($"❌ Error: {e.Message}"); }
+                } catch (Exception e) { Console.WriteLine($"Error: {e.Message}"); }
             }
-            else Console.WriteLine("⚠️ ID inválido.");
+            else Console.WriteLine("ID inválido.");
         break;
 
         case "8":
+            Console.Write("Ingrese el ID del trámite a eliminar: ");
+            if (Guid.TryParse(Console.ReadLine(), out Guid idBajaTramite))
+            {
+                try {
+                    bajaTramite.Ejecutar(idBajaTramite, Guid.NewGuid());
+                    Console.WriteLine("Trámite eliminado y estado del expediente actualizado.");
+                } catch (Exception e) { Console.WriteLine($"Error: {e.Message}"); }
+            }
+            else Console.WriteLine("ID inválido.");
+        break;
+
+
+        case "9":
             Console.Write("Ingrese el ID del expediente: ");
              if (Guid.TryParse(Console.ReadLine(), out Guid idExp)) 
             {
@@ -172,16 +195,16 @@ while (!salir)
                 try {
                 // Ejecutamos el caso de uso
                     cambiarEstadoManual.Ejecutar(idExp, nuevoEstado, Guid.NewGuid());
-                    Console.WriteLine("✅ Estado actualizado correctamente.");
+                    Console.WriteLine("Estado actualizado correctamente.");
                 } 
-                catch (Exception ex) { Console.WriteLine($"❌ Error: {ex.Message}"); }
+                catch (Exception ex) { Console.WriteLine($"Error: {ex.Message}"); }
             } 
-            else Console.WriteLine("⚠️ Estado no válido.");
+            else Console.WriteLine("Estado no válido.");
             } 
-            else Console.WriteLine("⚠️ ID de expediente inválido.");
+            else Console.WriteLine("ID de expediente inválido.");
         break;
         
-        case "9":
+        case "10":
              Console.WriteLine("\n--- INFORME: EXPEDIENTES POR ESTADO ---");
              Console.WriteLine("0: RecienIniciado, 1: ParaResolver, 2: ConResolucion, 3: EnNotificacion, 4: Finalizado");
              Console.Write("Seleccione el estado: ");
@@ -194,7 +217,7 @@ while (!salir)
     }
     break;
 
-        case "10":
+        case "11":
             Console.WriteLine("\n--- INFORME: EXPEDIENTES POR TIPO DE TRÁMITE ---");
             Console.WriteLine("0: Escrito, 1: PaseAEstudio, 2: Despacho, 3: Resolucion, 4: Notificacion, 5: Archivo");
             Console.Write("Seleccione la etiqueta de trámite: ");
