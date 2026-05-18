@@ -20,6 +20,10 @@ public class BajaExpedienteUseCase(
             throw new DominioException("No tenés permiso para eliminar expedientes.");
         }
 
+        //verifica si el expediente existe, sino lanza excepción
+        var expediente = repoExpediente.ObtenerPorId(expedienteId)
+        ?? throw new DominioException("No se encontró el expediente.");
+
         // 2. Coordinar la eliminación en cascada (Página 7 del TP)
         repoTramite.EliminarRelacionadosA(expedienteId);
 

@@ -43,6 +43,8 @@ public class ExpedienteRepositoryTxt : IExpedienteRepository
         File.WriteAllLines(Archivo, lineasRestantes);
     }
 
+
+
     public Expediente? ObtenerPorId(Guid id) => ObtenerTodos().FirstOrDefault(e => e.Id == id);
 
     public IEnumerable<Expediente> ObtenerTodos()
