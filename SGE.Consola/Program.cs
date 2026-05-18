@@ -219,7 +219,7 @@ while (!salir)
              Console.Write("Seleccione el estado: ");
 
              string? leerEstado = Console.ReadLine();// Leemos la entrada del usuario para el estado del expediente
-             if (Enum.TryParse<EstadoExpediente>(leerEstado, out EstadoExpediente estFiltro )
+             if (Enum.TryParse<EstadoExpediente>(leerEstado, true, out EstadoExpediente estFiltro )// con el true hacemos que no distinga mayúsculas de minúsculas
                 && Enum.IsDefined(typeof(EstadoExpediente), estFiltro))
              {
                 var filtrados = listarPorEstado.Ejecutar(estFiltro);
@@ -236,7 +236,7 @@ while (!salir)
             Console.Write("Seleccione la etiqueta de trámite: ");
 
             string? leerEtiqueta = Console.ReadLine();// Leemos la entrada del usuario para la etiqueta de trámite
-            if (Enum.TryParse<EtiquetaTramite>(leerEtiqueta, out EtiquetaTramite etiFiltro)
+            if (Enum.TryParse<EtiquetaTramite>(leerEtiqueta, true ,out EtiquetaTramite etiFiltro)// con el true hacemos que no distinga mayúsculas de minúsculas
                 && Enum.IsDefined(typeof(EtiquetaTramite), etiFiltro))
             {
                 var filtrados = consultarPorEtiqueta.Ejecutar(etiFiltro);
