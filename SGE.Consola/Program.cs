@@ -202,23 +202,27 @@ while (!salir)
         case "9":
             Console.WriteLine("\n--- CAMBIAR ESTADO DE EXPEDIENTE (MANUAL) ---");
             Console.Write("Ingrese el ID del expediente: ");
-             if (Guid.TryParse(Console.ReadLine(), out Guid idExp)) 
+            if (Guid.TryParse(Console.ReadLine(), out Guid idExp)) 
             {
-             // Mostramos los estados disponibles para ayudar al usuario
-            Console.WriteLine("Estados: 0= RecienIniciado, 1= ParaResolver, 2= ConResolucion, 3= EnNotificacion, 4= Finalizado");
-            Console.Write("Seleccione el número del nuevo estado: ");
-        
-            if (Enum.TryParse<EstadoExpediente>(Console.ReadLine(),true,  out EstadoExpediente nuevoEstado)) // con el true hacemos que no distinga mayúsculas de minúsculas
-        
-            {
-                try {
-                // Ejecutamos el caso de uso
-                    cambiarEstadoManual.Ejecutar(idExp, nuevoEstado, Guid.NewGuid());
-                    Console.WriteLine("Estado actualizado correctamente.");
+                // Verificamos que el expediente exista antes de seguir
+                var expExiste = repoExpediente.ObtenerPorId(idExp);
+                if (expExiste == null)
+                {
+                    Console.WriteLine("Error: No se encontró el expediente.");
+                    break;
+                }
+
+                Console.WriteLine("Estados: 0= RecienIniciado, 1= ParaResolver, 2= ConResolucion, 3= EnNotificacion, 4= Finalizado");
+                Console.Write("Seleccione el número del nuevo estado: ");
+                if (Enum.TryParse<EstadoExpediente>(Console.ReadLine(), true, out EstadoExpediente nuevoEstado))
+                {
+                    try {
+                        cambiarEstadoManual.Ejecutar(idExp, nuevoEstado, Guid.NewGuid());
+                        Console.WriteLine("Estado actualizado correctamente.");
+                    } 
+                    catch (Exception ex) { Console.WriteLine($"Error: {ex.Message}"); }
                 } 
-                catch (Exception ex) { Console.WriteLine($"Error: {ex.Message}"); }
-            } 
-            else Console.WriteLine("Estado no válido.");
+                else Console.WriteLine("Estado no válido.");
             } 
             else Console.WriteLine("ID de expediente inválido.");
         break;
