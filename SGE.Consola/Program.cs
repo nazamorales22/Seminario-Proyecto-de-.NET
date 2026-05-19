@@ -11,9 +11,7 @@ using SGE.Dominio.Comun;
 var repoExpediente = new ExpedienteRepositoryTxt();
 var repoTramite = new TramiteRepositoryTxt();
 
-// ERROR CORREGIDO: Solo dejamos un authService. 
-// Usamos el FakeAutorizacionService que definiste abajo para que no pida archivos que no existen.
-var authService = new FakeAutorizacionService(); 
+var authService = new AutorizacionProvisionalService(); 
 
 // Instanciamos los Casos de Uso
 var altaExpediente = new AltaExpedienteUseCase(repoExpediente, authService);
@@ -265,9 +263,4 @@ while (!salir)
         default: Console.WriteLine("Opción no válida."); break;
         
     }
-}
-
-// Clase auxiliar temporal para que el código compile
-public class FakeAutorizacionService : SGE.Aplicacion.Autorizacion.IAutorizacionService {
-    public bool PoseeElPermiso(Guid id, SGE.Aplicacion.Autorizacion.Permiso p) => true;
 }
