@@ -8,17 +8,19 @@ public class AltaExpedienteUseCase(IExpedienteRepository repos, IAutorizacionSer
 {
     public void Ejecutar(string caratulaTexto, Guid usuarioId)
     {
-        // 1. Validar Permisos
+        //verifico los permisos
         if (!auth.PoseeElPermiso(usuarioId, Permiso.ExpedienteAlta))
         {
             throw new DominioException("No tenés permiso para dar de alta expedientes.");
         }
 
-        // 2. Crear el objeto de dominio (la validación de la carátula ocurre acá adentro)
+        
+
+        //creo el expediente
         var caratula = new Caratula(caratulaTexto);
         var expediente = new Expediente(caratula, usuarioId);
 
-        // 3. Persistir
+        
         repos.Agregar(expediente);
     }
 }

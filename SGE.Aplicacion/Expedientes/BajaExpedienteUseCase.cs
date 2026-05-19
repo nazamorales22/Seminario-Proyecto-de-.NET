@@ -13,8 +13,7 @@ public class BajaExpedienteUseCase(
 {
     public void Ejecutar(Guid expedienteId, Guid usuarioId)
     {
-        // 1. Validar Permisos
-        // Cambié AutorizacionException por DominioException que es la que ya tenés creada
+        // verifica si tien los permisos
         if (!auth.PoseeElPermiso(usuarioId, Permiso.ExpedienteBaja))
         {
             throw new DominioException("No tenés permiso para eliminar expedientes.");
@@ -24,10 +23,10 @@ public class BajaExpedienteUseCase(
         var expediente = repoExpediente.ObtenerPorId(expedienteId)
         ?? throw new DominioException("No se encontró el expediente.");
 
-        // 2. Coordinar la eliminación en cascada (Página 7 del TP)
+        
         repoTramite.EliminarRelacionadosA(expedienteId);
 
-        // 3. Finalmente eliminamos el expediente
+        
         repoExpediente.Eliminar(expedienteId);
     }
 }

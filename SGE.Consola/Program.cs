@@ -6,8 +6,7 @@ using SGE.Dominio.Tramites;
 using SGE.Dominio.Expedientes;
 using SGE.Dominio.Comun;
 
-// 1. CONFIGURACIÓN (Inyección de dependencias manual)
-// Usamos los nombres de variables que ya tenés definidos
+
 var repoExpediente = new ExpedienteRepositoryTxt();
 var repoTramite = new TramiteRepositoryTxt();
 
@@ -18,9 +17,9 @@ var altaExpediente = new AltaExpedienteUseCase(repoExpediente, authService);
 var altaTramite = new AltaTramiteUseCase(repoTramite, repoExpediente, authService);
 var listarExpedientes = new ListarExpedientesUseCase(repoExpediente);
 
-// ERROR CORREGIDO: Aquí usamos 'repoExpediente' (el nombre que definiste arriba)
+
 var bajaExpedienteUseCase = new BajaExpedienteUseCase(repoExpediente, repoTramite, authService);
-// Instancio el caso de uso para modifica
+
 var modificarExpediente = new ModificarExpedienteUseCase(repoExpediente, authService);
 
 
@@ -30,9 +29,8 @@ var modificarTramite = new ModificarTramiteUseCase(repoTramite, authService, act
 var listarTramites = new ListarTramitesUseCase(repoTramite);
 var cambiarEstadoManual = new CambiarEstadoExpedienteUseCase(repoExpediente, authService);
 
-// --- NUEVOS CASOS DE USO FASE 2 ---
+
 var listarPorEstado = new ListarExpedientesPorEstadoUseCase(repoExpediente);
-// Este lo crearemos a continuación
 var consultarPorEtiqueta = new ConsultarExpedientesPorEtiquetaUseCase(repoExpediente, repoTramite);
 
 
@@ -41,8 +39,8 @@ var actualizacionEstadoporBajaDeTramite = new ActualizacionEstadoExpedienteServi
 var bajaTramite = new BajaTramiteUseCase(repoTramite, authService, actualizacionEstadoporBajaDeTramite);
 
 
-// 2. MENÚ DE USUARIO
-bool salir = false;
+
+bool salir = false;//para el menu
 
 while (!salir)
 {   
@@ -77,11 +75,19 @@ while (!salir)
         case "2":
            Console.Write("Ingrese el ID del expediente (GUID): ");
            if (Guid.TryParse(Console.ReadLine(), out Guid expId)) {
-               Console.Write("Ingrese el contenido del trámite: ");
-               string contenidoStr = Console.ReadLine() ?? "";
-               try {
-                  altaTramite.Ejecutar(expId, contenidoStr, EtiquetaTramite.PaseAEstudio, Guid.NewGuid());
-                  Console.WriteLine("¡Trámite cargado y estado de expediente actualizado!");
+
+                // Verificamos que el expediente exista antes de seguir
+                var expExiste = repoExpediente.ObtenerPorId(expId);
+                if (expExiste == null)                {
+                    Console.WriteLine("Error: No se encontró el expediente.");
+                    break;
+                }
+
+                Console.Write("Ingrese el contenido del trámite: ");
+                string contenidoStr = Console.ReadLine() ?? "";
+                try {
+                    altaTramite.Ejecutar(expId, contenidoStr, EtiquetaTramite.PaseAEstudio, Guid.NewGuid());
+                    Console.WriteLine("¡Trámite cargado y estado de expediente actualizado!");
              } catch (Exception e) { Console.WriteLine($"Error: {e.Message}"); }
            } else {
                 Console.WriteLine("ID de expediente no válido.");
@@ -103,6 +109,14 @@ while (!salir)
             Console.Write("Ingrese el ID del expediente: ");
             if (Guid.TryParse(Console.ReadLine(), out Guid idExpLista))
             {
+
+                // Verificamos que el expediente exista antes de seguir
+                var expExiste = repoExpediente.ObtenerPorId(idExpLista);
+                if (expExiste == null)              {
+                    Console.WriteLine("Error: No se encontró el expediente.");  
+                    break;
+                }
+
                 try {
                     var tramites = listarTramites.Ejecutar(idExpLista);
                     foreach (var t in tramites)
@@ -142,6 +156,7 @@ while (!salir)
             Console.Write("Ingrese el ID del trámite a eliminar: ");
             if (Guid.TryParse(Console.ReadLine(), out Guid idBajaTramite))
             {
+
                 try {
                     bajaTramite.Ejecutar(idBajaTramite, Guid.NewGuid());
                     Console.WriteLine("Trámite eliminado y estado del expediente actualizado.");
@@ -156,11 +171,22 @@ while (!salir)
            Console.Write("Ingrese el ID del expediente a modificar: ");
            if (Guid.TryParse(Console.ReadLine(),  out Guid idMod)) // con el true hacemos que no distinga mayúsculas de minúsculas
            {
-                Console.Write("Ingrese la nueva carátula: ");
-                string nuevaC = Console.ReadLine() ?? "";
+
+            // Verificamos que el expediente exista antes de seguir
+            var expExiste = repoExpediente.ObtenerPorId(idMod);
+            if (expExiste == null)            
+            {
+                Console.WriteLine("Error: No se encontró el expediente.");
+                break;
+            }
+                
               try {
-                   modificarExpediente.Ejecutar(idMod, nuevaC, Guid.NewGuid());
-                   Console.WriteLine("Expediente modificado con éxito.");
+
+                    Console.Write("Ingrese la nueva carátula: ");
+                    string nuevaC = Console.ReadLine() ?? "";
+
+                    modificarExpediente.Ejecutar(idMod, nuevaC, Guid.NewGuid());
+                    Console.WriteLine("Expediente modificado con éxito.");
             } catch (Exception e) { Console.WriteLine($"Error: {e.Message}"); }
            } else {
                 Console.WriteLine("ID de expediente no válido.");
@@ -172,6 +198,15 @@ while (!salir)
             Console.Write("Ingrese el ID del trámite a modificar: ");
             if (Guid.TryParse(Console.ReadLine(), out Guid idTramite))
             {
+
+                // Verificamos que el trámite exista antes de seguir
+                var tramiteExiste = repoTramite.ObtenerPorId(idTramite);
+                if (tramiteExiste == null)                
+                {
+                    Console.WriteLine("Error: No se encontró el trámite.");
+                    break;
+                }
+
                 Console.Write("Ingrese el nuevo contenido: ");
                 string nuevoContenido = Console.ReadLine() ?? "";
                 

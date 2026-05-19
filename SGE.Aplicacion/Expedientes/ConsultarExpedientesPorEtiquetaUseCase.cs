@@ -9,16 +9,16 @@ public class ConsultarExpedientesPorEtiquetaUseCase(
 {
     public IEnumerable<Expediente> Ejecutar(EtiquetaTramite etiqueta)
     {
-        // 1. Buscamos todos los trámites que tengan esa etiqueta
-        var tramites = repoTram.ObtenerTodos(); // Asegurate que tu repo tenga ObtenerTodos()
+        //buscamos tramites con esa etiqueta
+        var tramites = repoTram.ObtenerTodos();
         
-        // 2. Sacamos los IDs de los expedientes involucrados (sin repetir)
+        //obtenemos los id de los expedientes con esos tramites
         var idsExpedientes = tramites
             .Where(t => t.Etiqueta == etiqueta)
             .Select(t => t.ExpedienteId)
             .Distinct();
 
-        // 3. Devolvemos los expedientes reales
+        //devolvemos los expedientes que tengan esos id
         return repoExp.ObtenerTodos().Where(e => idsExpedientes.Contains(e.Id));
     }
 }

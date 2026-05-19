@@ -4,8 +4,15 @@ using SGE.Dominio.Tramites;
 
 public class ListarTramitesUseCase(ITramiteRepository repositorio)
 {
+
+    
+
+
+
     public List<TramiteDTO> Ejecutar(Guid expedienteId)
     {
+
+        
         return repositorio.ObtenerPorExpedienteId(expedienteId)
             .Select(t => new TramiteDTO {
                 Id = t.Id, 

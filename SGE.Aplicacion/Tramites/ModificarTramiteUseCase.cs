@@ -24,6 +24,7 @@ public class ModificarTramiteUseCase
         if (!_authService.PoseeElPermiso(idUsuario, Permiso.TramiteModificacion))
             throw new AutorizacionException("No tiene permiso para modificar trámites.");
 
+        //verificar que el trámite exista
         var tramite = _repoTramite.ObtenerPorId(idTramite) 
             ?? throw new DominioException("No se encontró el trámite.");
 

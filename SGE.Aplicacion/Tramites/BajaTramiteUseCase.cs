@@ -23,6 +23,7 @@ public class BajaTramiteUseCase
         if (!_authService.PoseeElPermiso(idUsuario, Permiso.TramiteBaja))
             throw new AutorizacionException("No tiene permiso para dar de baja un trámite.");
 
+        // Verificamos que el trámite exista antes de seguir
         var tramite = _repoTramite.ObtenerPorId(idTramite)
             ?? throw new DominioException("No se encontró el trámite.");
 

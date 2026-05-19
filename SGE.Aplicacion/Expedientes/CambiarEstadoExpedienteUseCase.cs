@@ -15,6 +15,7 @@ public class CambiarEstadoExpedienteUseCase(
             throw new AutorizacionException("No tiene permisos para cambiar el estado.");
         }
 
+        //verificar que el expediente exista
         var expediente = repo.ObtenerPorId(expedienteId);
         if (expediente == null) throw new Exception("Expediente no encontrado.");
 
