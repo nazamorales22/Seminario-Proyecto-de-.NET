@@ -1,7 +1,9 @@
 // la cmbiamos using SGE.Aplicacion.Expedientes;
 using SGE.Dominio.Tramites;
 using SGE.Dominio.Expedientes;
+using SGE.Aplicacion.Expedientes;
 namespace SGE.Aplicacion.Tramites;
+
 
 public class ActualizacionEstadoExpedienteService
 {

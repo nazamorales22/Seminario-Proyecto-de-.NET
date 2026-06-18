@@ -1,9 +1,6 @@
 using SGE.Aplicacion.Autorizacion;
 using SGE.Dominio.Tramites;
 using SGE.Dominio.Comun;
-
-
-
 namespace SGE.Aplicacion.Tramites;
 
 public class ModificarTramiteUseCase
@@ -19,18 +16,28 @@ public class ModificarTramiteUseCase
         _actualizacionEstado = actualizacionEstado;
     }
 
-    public void Ejecutar(Guid idTramite, EtiquetaTramite etiqueta, ContenidoTramite contenido, Guid idUsuario)
+    public TramiteResponse Ejecutar(ModificarTramiteRequest request)
     {
-        if (!_authService.PoseeElPermiso(idUsuario, Permiso.TramiteModificacion))
+        if (!_authService.PoseeElPermiso(request.IdUsuario, Permiso.TramiteModificacion))
             throw new AutorizacionException("No tiene permiso para modificar trámites.");
 
-        //verificar que el trámite exista
-        var tramite = _repoTramite.ObtenerPorId(idTramite) 
+        var tramite = _repoTramite.ObtenerPorId(request.Id)
             ?? throw new DominioException("No se encontró el trámite.");
 
-        tramite.Modificar(etiqueta, contenido, idUsuario);
+        var contenido = new ContenidoTramite(request.Contenido);
+        tramite.Modificar(request.Etiqueta, contenido, request.IdUsuario);
         _repoTramite.Modificar(tramite);
 
-        _actualizacionEstado.Ejecutar(tramite.ExpedienteId, idUsuario);
+        _actualizacionEstado.Ejecutar(tramite.ExpedienteId, request.IdUsuario);
+
+        return new TramiteResponse(
+            tramite.Id,
+            tramite.ExpedienteId,
+            tramite.Etiqueta,
+            tramite.Contenido.Valor,
+            tramite.FechaCreacion,
+            tramite.FechaUltimaModificacion,
+            tramite.UsuarioUltimoCambio
+        );
     }
 }

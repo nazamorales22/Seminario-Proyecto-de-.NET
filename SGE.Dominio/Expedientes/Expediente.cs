@@ -16,6 +16,9 @@ public class Expediente
     // Constructor para NUEVOS (acá sí generamos ID y Fecha actual)
     public Expediente(Caratula caratula, Guid usuarioId)
     {
+        if (usuarioId == Guid.Empty)
+            throw new DominioException("El usuario no puede ser vacío.");
+
         Id = Guid.NewGuid();
         Caratula = caratula;
         UsuarioUltimoCambio = usuarioId;
@@ -49,6 +52,7 @@ public class Expediente
     public static Expediente Reconstruir(Guid id, Caratula caratula, Guid usuarioId, EstadoExpediente estado, DateTime fechaCreacion, DateTime fechaUltimaModificacion)
     {
         return new Expediente(id, caratula, usuarioId, estado, fechaCreacion, fechaUltimaModificacion);
+//aca no se valida los permisos del usuario porque antes de llamar a Reconstruir ya fue validado
     }
 
     public bool ActualizarEstado(EtiquetaTramite? ultimaEtiqueta, Guid idUsuario)

@@ -16,6 +16,9 @@ public class Tramite
      // Constructor para trámites NUEVOS
     public Tramite(Guid expedienteId, EtiquetaTramite etiqueta, ContenidoTramite contenido, Guid usuarioId)
     {
+        if (usuarioId == Guid.Empty)
+            throw new DominioException("El usuario no puede ser vacío.");
+
         Id = Guid.NewGuid();
         ExpedienteId = expedienteId;
         Etiqueta = etiqueta;
@@ -46,6 +49,9 @@ public class Tramite
     // Método para modificar
     public void Modificar(EtiquetaTramite etiqueta, ContenidoTramite contenido, Guid usuarioId)
     {
+        if (usuarioId == Guid.Empty)
+            throw new DominioException("El usuario no puede ser vacío.");
+
         Etiqueta = etiqueta;
         Contenido = contenido;
         UsuarioUltimoCambio = usuarioId;

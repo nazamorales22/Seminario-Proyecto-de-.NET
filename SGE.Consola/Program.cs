@@ -1,4 +1,3 @@
-
 using SGE.Aplicacion.Expedientes;
 using SGE.Aplicacion.Tramites;
 using SGE.Infraestructura;
@@ -6,39 +5,28 @@ using SGE.Dominio.Tramites;
 using SGE.Dominio.Expedientes;
 using SGE.Dominio.Comun;
 
-
 var repoExpediente = new ExpedienteRepositoryTxt();
 var repoTramite = new TramiteRepositoryTxt();
 
-var authService = new AutorizacionProvisionalService(); 
+var authService = new AutorizacionProvisionalService();
 
-// Instanciamos los Casos de Uso
-var altaExpediente = new AltaExpedienteUseCase(repoExpediente, authService);
-var altaTramite = new AltaTramiteUseCase(repoTramite, repoExpediente, authService);
-var listarExpedientes = new ListarExpedientesUseCase(repoExpediente);
-
-
-var bajaExpedienteUseCase = new BajaExpedienteUseCase(repoExpediente, repoTramite, authService);
-
-var modificarExpediente = new ModificarExpedienteUseCase(repoExpediente, authService);
-
-
+// Servicios primero, porque otros Casos de Uso los necesitan
 var actualizacionEstado = new ActualizacionEstadoExpedienteService(repoExpediente, repoTramite);
-var modificarTramite = new ModificarTramiteUseCase(repoTramite, authService, actualizacionEstado);
 
-var listarTramites = new ListarTramitesUseCase(repoTramite);
+// Casos de Uso de Expedientes
+var altaExpediente = new AltaExpedienteUseCase(repoExpediente, authService);
+var listarExpedientes = new ListarExpedientesUseCase(repoExpediente);
+var bajaExpedienteUseCase = new BajaExpedienteUseCase(repoExpediente, repoTramite, authService);
+var modificarExpediente = new ModificarExpedienteUseCase(repoExpediente, authService);
 var cambiarEstadoManual = new CambiarEstadoExpedienteUseCase(repoExpediente, authService);
-
-
 var listarPorEstado = new ListarExpedientesPorEstadoUseCase(repoExpediente);
 var consultarPorEtiqueta = new ConsultarExpedientesPorEtiquetaUseCase(repoExpediente, repoTramite);
 
-
-//eliminar tramite 
-var actualizacionEstadoporBajaDeTramite = new ActualizacionEstadoExpedienteService(repoExpediente, repoTramite);
-var bajaTramite = new BajaTramiteUseCase(repoTramite, authService, actualizacionEstadoporBajaDeTramite);
-
-
+// Casos de Uso de Trámites
+var altaTramite = new AltaTramiteUseCase(repoTramite, repoExpediente, authService, actualizacionEstado);
+var modificarTramite = new ModificarTramiteUseCase(repoTramite, authService, actualizacionEstado);
+var bajaTramite = new BajaTramiteUseCase(repoTramite, authService, actualizacionEstado);
+var listarTramites = new ListarTramitesUseCase(repoTramite);
 
 bool salir = false;//para el menu
 
@@ -67,8 +55,9 @@ while (!salir)
             Console.Write("Ingrese la carátula del expediente: ");
             string? caratula = Console.ReadLine();
             try {
-                altaExpediente.Ejecutar(caratula ?? "", Guid.NewGuid());
-                Console.WriteLine("¡Expediente creado con éxito!");
+                var request = new AltaExpedienteRequest(caratula ?? "", Guid.NewGuid());
+                var response = altaExpediente.Ejecutar(request);
+                Console.WriteLine($"Expediente creado exitosamente con ID: {response.Id}");
             } catch (Exception e) { Console.WriteLine($"Error: {e.Message}"); }
             break;
 
@@ -86,8 +75,9 @@ while (!salir)
                 Console.Write("Ingrese el contenido del trámite: ");
                 string contenidoStr = Console.ReadLine() ?? "";
                 try {
-                    altaTramite.Ejecutar(expId, contenidoStr, EtiquetaTramite.PaseAEstudio, Guid.NewGuid());
-                    Console.WriteLine("¡Trámite cargado y estado de expediente actualizado!");
+                    var request = new AltaTramiteRequest(expId, contenidoStr, EtiquetaTramite.PaseAEstudio, Guid.NewGuid());
+                    var response = altaTramite.Ejecutar(request);
+                    Console.WriteLine($"Trámite cargado exitosamente con ID: {response.Id}");
              } catch (Exception e) { Console.WriteLine($"Error: {e.Message}"); }
            } else {
                 Console.WriteLine("ID de expediente no válido.");
@@ -101,6 +91,7 @@ while (!salir)
                 foreach (var e in lista) {
                     Console.WriteLine($"ID: {e.Id} | Carátula: {e.Caratula} | Estado: {e.Estado}");
                 }
+                
             } catch (Exception e) { Console.WriteLine($"Error al listar: {e.Message}"); }
             break;
         
@@ -136,8 +127,8 @@ while (!salir)
              {
                 try 
                 {
-                    Guid usuarioIdActivo = Guid.NewGuid(); 
-                    bajaExpedienteUseCase.Ejecutar(idParaBorrar, usuarioIdActivo);
+                    var request = new BajaExpedienteRequest(idParaBorrar, Guid.NewGuid());
+                    bajaExpedienteUseCase.Ejecutar(request);
                     Console.WriteLine("Expediente y sus trámites asociados eliminados correctamente.");
                 }
                 catch (Exception ex)
@@ -158,7 +149,8 @@ while (!salir)
             {
 
                 try {
-                    bajaTramite.Ejecutar(idBajaTramite, Guid.NewGuid());
+                    var request = new BajaTramiteRequest(idBajaTramite, Guid.NewGuid());
+                    bajaTramite.Ejecutar(request);
                     Console.WriteLine("Trámite eliminado y estado del expediente actualizado.");
                 } catch (Exception e) { Console.WriteLine($"Error: {e.Message}"); }
             }
@@ -185,8 +177,9 @@ while (!salir)
                     Console.Write("Ingrese la nueva carátula: ");
                     string nuevaC = Console.ReadLine() ?? "";
 
-                    modificarExpediente.Ejecutar(idMod, nuevaC, Guid.NewGuid());
-                    Console.WriteLine("Expediente modificado con éxito.");
+                    var request = new ModificarExpedienteRequest(idMod, nuevaC, Guid.NewGuid());
+                    var response = modificarExpediente.Ejecutar(request);
+                    Console.WriteLine($"Expediente modificado con éxito. ID: {response.Id}");
             } catch (Exception e) { Console.WriteLine($"Error: {e.Message}"); }
            } else {
                 Console.WriteLine("ID de expediente no válido.");
@@ -221,8 +214,9 @@ while (!salir)
                     && Enum.IsDefined(typeof(EtiquetaTramite), etiqueta))
                 {
                     try {
-                        modificarTramite.Ejecutar(idTramite, etiqueta, new ContenidoTramite(nuevoContenido), Guid.NewGuid());
-                        Console.WriteLine("Trámite modificado con éxito.");
+                        var request = new ModificarTramiteRequest(idTramite, nuevoContenido, etiqueta, Guid.NewGuid());
+                        var response = modificarTramite.Ejecutar(request);
+                        Console.WriteLine($"Trámite modificado exitosamente con ID: {response.Id}");
                     } catch (Exception e) { Console.WriteLine($"Error: {e.Message}"); }
                 }
                 else Console.WriteLine("Etiqueta no válida.");
@@ -250,7 +244,8 @@ while (!salir)
                 if (Enum.TryParse<EstadoExpediente>(Console.ReadLine(), true, out EstadoExpediente nuevoEstado))
                 {
                     try {
-                        cambiarEstadoManual.Ejecutar(idExp, nuevoEstado, Guid.NewGuid());
+                        var request = new CambiarEstadoExpedienteRequest(idExp, nuevoEstado, Guid.NewGuid());
+                        var response = cambiarEstadoManual.Ejecutar(request);
                         Console.WriteLine("Estado actualizado correctamente.");
                     } 
                     catch (Exception ex) { Console.WriteLine($"Error: {ex.Message}"); }
@@ -269,7 +264,8 @@ while (!salir)
              if (Enum.TryParse<EstadoExpediente>(leerEstado, true, out EstadoExpediente estFiltro )// con el true hacemos que no distinga mayúsculas de minúsculas
                 && Enum.IsDefined(typeof(EstadoExpediente), estFiltro))
              {
-                var filtrados = listarPorEstado.Ejecutar(estFiltro);
+                var request = new ListarExpedientesPorEstadoRequest(estFiltro);
+                var filtrados = listarPorEstado.Ejecutar(request);
                 Console.WriteLine($"\nResultados ({estFiltro}):");
                 foreach (var e in filtrados) Console.WriteLine($"- {e.Caratula} (ID: {e.Id})");
                 if (!filtrados.Any()) Console.WriteLine("No se encontraron resultados.");
@@ -286,10 +282,11 @@ while (!salir)
             if (Enum.TryParse<EtiquetaTramite>(leerEtiqueta, true ,out EtiquetaTramite etiFiltro)// con el true hacemos que no distinga mayúsculas de minúsculas
                 && Enum.IsDefined(typeof(EtiquetaTramite), etiFiltro))
             {
-                var filtrados = consultarPorEtiqueta.Ejecutar(etiFiltro);
-                Console.WriteLine($"\nExpedientes que tienen trámites de tipo [{etiFiltro}]:");
+                var request = new ConsultarExpedientesPorEtiquetaRequest(etiFiltro);
+                var filtrados = consultarPorEtiqueta.Ejecutar(request);
+                Console.WriteLine($"\nExpedientes que tienen trámites de tipo {etiFiltro}:");
                 foreach (var e in filtrados) Console.WriteLine($"- {e.Caratula} (ID: {e.Id})");
-                 if (!filtrados.Any()) Console.WriteLine("No se encontraron expedientes con esos trámites.");
+                if (!filtrados.Any()) Console.WriteLine("No se encontraron expedientes con esos trámites.");
             }
             else Console.WriteLine("Etiqueta no válida.");
     break;

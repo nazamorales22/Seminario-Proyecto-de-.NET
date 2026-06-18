@@ -1,8 +1,6 @@
 using SGE.Aplicacion.Autorizacion;
 using SGE.Dominio.Comun;
 using SGE.Dominio.Tramites;
-
-
 namespace SGE.Aplicacion.Tramites;
 
 public class BajaTramiteUseCase
@@ -18,19 +16,18 @@ public class BajaTramiteUseCase
         _actualizacionEstado = actualizacionEstado;
     }
 
-    public void Ejecutar(Guid idTramite, Guid idUsuario)
+    public void Ejecutar(BajaTramiteRequest request)
     {
-        if (!_authService.PoseeElPermiso(idUsuario, Permiso.TramiteBaja))
+        if (!_authService.PoseeElPermiso(request.IdUsuario, Permiso.TramiteBaja))
             throw new AutorizacionException("No tiene permiso para dar de baja un trámite.");
 
-        // Verificamos que el trámite exista antes de seguir
-        var tramite = _repoTramite.ObtenerPorId(idTramite)
+        var tramite = _repoTramite.ObtenerPorId(request.Id)
             ?? throw new DominioException("No se encontró el trámite.");
 
         Guid expedienteId = tramite.ExpedienteId;
 
-        _repoTramite.Eliminar(idTramite);
+        _repoTramite.Eliminar(request.Id);
 
-        _actualizacionEstado.Ejecutar(expedienteId, idUsuario);
+        _actualizacionEstado.Ejecutar(expedienteId, request.IdUsuario);
     }
 }

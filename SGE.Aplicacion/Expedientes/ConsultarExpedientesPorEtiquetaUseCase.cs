@@ -1,24 +1,30 @@
 using SGE.Dominio.Expedientes;
 using SGE.Dominio.Tramites;
-
+using SGE.Aplicacion.Tramites;
 namespace SGE.Aplicacion.Expedientes;
 
 public class ConsultarExpedientesPorEtiquetaUseCase(
-    IExpedienteRepository repoExp, 
+    IExpedienteRepository repoExp,
     ITramiteRepository repoTram)
 {
-    public IEnumerable<Expediente> Ejecutar(EtiquetaTramite etiqueta)
+    public IEnumerable<ExpedienteResponse> Ejecutar(ConsultarExpedientesPorEtiquetaRequest request)
     {
-        //buscamos tramites con esa etiqueta
         var tramites = repoTram.ObtenerTodos();
-        
-        //obtenemos los id de los expedientes con esos tramites
+
         var idsExpedientes = tramites
-            .Where(t => t.Etiqueta == etiqueta)
+            .Where(t => t.Etiqueta == request.Etiqueta)
             .Select(t => t.ExpedienteId)
             .Distinct();
 
-        //devolvemos los expedientes que tengan esos id
-        return repoExp.ObtenerTodos().Where(e => idsExpedientes.Contains(e.Id));
+        return repoExp.ObtenerTodos()
+            .Where(e => idsExpedientes.Contains(e.Id))
+            .Select(e => new ExpedienteResponse(
+                e.Id,
+                e.Caratula.Valor,
+                e.Estado,
+                e.FechaCreacion,
+                e.FechaUltimaModificacion,
+                e.UsuarioUltimoCambio
+            ));
     }
 }

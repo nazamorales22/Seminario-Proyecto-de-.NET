@@ -1,36 +1,38 @@
-
 using SGE.Aplicacion.Autorizacion;
 using SGE.Dominio.Expedientes;
 using SGE.Dominio.Tramites;
 using SGE.Dominio.Comun;
+using SGE.Aplicacion.Expedientes; 
 namespace SGE.Aplicacion.Tramites;
 
 public class AltaTramiteUseCase(
-    ITramiteRepository repoTramite, 
-    IExpedienteRepository repoExpediente, 
-    IAutorizacionService auth)
+    ITramiteRepository repoTramite,
+    IExpedienteRepository repoExpediente,
+    IAutorizacionService auth,
+    ActualizacionEstadoExpedienteService actualizacionEstado)
 {
-    public void Ejecutar(Guid expedienteId, string contenidoTexto, EtiquetaTramite etiqueta, Guid usuarioId)
+    public TramiteResponse Ejecutar(AltaTramiteRequest request)
     {
-        //verifico los permisos
-        if (!auth.PoseeElPermiso(usuarioId, Permiso.TramiteAlta))
-        {
-            throw new DominioException("No tenés permiso para crear trámites.");
-        }
+        if (!auth.PoseeElPermiso(request.IdUsuario, Permiso.TramiteAlta))
+            throw new AutorizacionException("No tenés permiso para crear trámites.");
 
-        // Verifico que el expediente exista
-        var expediente = repoExpediente.ObtenerPorId(expedienteId) 
+        var expediente = repoExpediente.ObtenerPorId(request.ExpedienteId)
             ?? throw new DominioException("El expediente no existe.");
 
-        //creo el trámite
-        var contenido = new ContenidoTramite(contenidoTexto);
-        var tramite = new Tramite(expedienteId, etiqueta, contenido, usuarioId);
+        var contenido = new ContenidoTramite(request.Contenido);
+        var tramite = new Tramite(request.ExpedienteId, request.Etiqueta, contenido, request.IdUsuario);
 
-       // el expediente
-        expediente.ActualizarEstado(etiqueta, usuarioId);
-
-       //guardo los cambios
         repoTramite.Agregar(tramite);
-        repoExpediente.Modificar(expediente);
+        actualizacionEstado.Ejecutar(request.ExpedienteId, request.IdUsuario);
+
+        return new TramiteResponse(
+            tramite.Id,
+            tramite.ExpedienteId,
+            tramite.Etiqueta,
+            tramite.Contenido.Valor,
+            tramite.FechaCreacion,
+            tramite.FechaUltimaModificacion,
+            tramite.UsuarioUltimoCambio
+        );
     }
 }
