@@ -60,6 +60,10 @@ public class Expediente
 
     public bool ActualizarEstado(EtiquetaTramite? ultimaEtiqueta, Guid idUsuario)
     {
+        if(Estado == EstadoExpediente.Finalizado)
+        {
+            throw new DominioException("No se pueden agregar tramites ni modificar un expediente que se encuentra finalizado.  ");
+        }
         var estadoAnterior = Estado;
         Estado = ultimaEtiqueta switch
         {
