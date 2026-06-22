@@ -5,6 +5,34 @@ using SGE.Dominio.Tramites;
 using SGE.Dominio.Expedientes;
 using SGE.Dominio.Comun;
 
+// =========================================================================
+// 🗄️ NUEVA PERSISTENCIA: Inicializamos Entity Framework Core
+// =========================================================================
+using var context = new SGEDbContext();
+// Nos aseguramos de que la base de datos esté creada físicamente antes de arrancar
+context.Database.EnsureCreated(); 
+
+// Inicializamos tus nuevos repositorios SQL pasándoles el contexto
+var repoExpediente = new ExpedienteRepositorySql(context);
+var repoTramite = new TramiteRepositorySql(context);
+
+// =========================================================================
+// El resto de los servicios y Casos de Uso quedan EXACTAMENTE IGUAL...
+// =========================================================================
+var authService = new AutorizacionProvisionalService();
+var actualizacionEstado = new ActualizacionEstadoExpedienteService(repoExpediente, repoTramite);
+
+// Casos de Uso de Expedientes...
+/*
+
+
+using SGE.Aplicacion.Expedientes;
+using SGE.Aplicacion.Tramites;
+using SGE.Infraestructura;
+using SGE.Dominio.Tramites;
+using SGE.Dominio.Expedientes;
+using SGE.Dominio.Comun;
+
 var repoExpediente = new ExpedienteRepositoryTxt();
 var repoTramite = new TramiteRepositoryTxt();
 
@@ -12,7 +40,7 @@ var authService = new AutorizacionProvisionalService();
 
 // Servicios primero, porque otros Casos de Uso los necesitan
 var actualizacionEstado = new ActualizacionEstadoExpedienteService(repoExpediente, repoTramite);
-
+*/
 // Casos de Uso de Expedientes
 var altaExpediente = new AltaExpedienteUseCase(repoExpediente, authService);
 var listarExpedientes = new ListarExpedientesUseCase(repoExpediente);
