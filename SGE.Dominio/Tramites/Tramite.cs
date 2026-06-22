@@ -13,6 +13,15 @@ public class Tramite
     public DateTime FechaUltimaModificacion { get; private set; }
     public Guid UsuarioUltimoCambio { get; private set; }
 
+
+
+
+
+    
+// 🗄️ CONSTRUCTOR PRIVADO VACÍO PARA EF CORE (Evita el error de bind de parámetros)
+#pragma warning disable CS8618 
+private Tramite() { } 
+#pragma warning restore CS8618
      // Constructor para trámites NUEVOS
     public Tramite(Guid expedienteId, EtiquetaTramite etiqueta, ContenidoTramite contenido, Guid usuarioId)
     {

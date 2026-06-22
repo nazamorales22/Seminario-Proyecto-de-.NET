@@ -483,3 +483,6 @@ $RECYCLE.BIN/
 
 # Datos de prueba generados por la app
 SGE.Consola/*.txt
+*.lscache
+
+*.sqlite
