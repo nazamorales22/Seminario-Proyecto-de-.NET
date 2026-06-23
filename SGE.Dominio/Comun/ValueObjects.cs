@@ -33,3 +33,25 @@ public record class ContenidoTramite
 
     public override string ToString() => Valor;
 }
+
+public record class CorreoElectronico
+{
+    public string Valor { get; init; }
+
+    public CorreoElectronico(string valor)
+    {
+        if (string.IsNullOrWhiteSpace(valor))
+        {
+            throw new DominioException("El correo electrónico no puede estar vacío.");
+        }
+
+        if (!valor.Contains('@') || !valor.Contains('.'))
+        {
+            throw new DominioException("El correo electrónico no tiene un formato válido.");
+        }
+
+        Valor = valor.Trim().ToLowerInvariant();
+    }
+
+    public override string ToString() => Valor;
+}

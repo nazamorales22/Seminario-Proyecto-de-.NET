@@ -1,4 +1,4 @@
-namespace SGE.Aplicacion.Autorizacion;
+namespace SGE.Dominio.Comun;
 
 public enum Permiso 
 { 
