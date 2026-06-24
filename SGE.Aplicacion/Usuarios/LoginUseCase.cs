@@ -1,13 +1,11 @@
 using SGE.Dominio.Comun;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace SGE.Aplicacion.Usuarios;
 
 public record LoginRequest(string Correo, string Contrasena);
-public record LoginResponse(Guid UserId, string Nombre, string Correo, bool EsAdministrador);
+public record LoginResponse(Guid UserId, string Nombre, string Correo, bool EsAdministrador, string Token);
 
-public class LoginUseCase(IUsuarioRepository repo)
+public class LoginUseCase(IUsuarioRepository repo, IHasher hasher, ITokenService tokenService)
 {
     public LoginResponse Ejecutar(LoginRequest request)
     {
@@ -17,21 +15,18 @@ public class LoginUseCase(IUsuarioRepository repo)
         var usuario = repo.ObtenerPorCorreo(request.Correo)
             ?? throw new DominioException("Credenciales inválidas.");
 
-        var hashIngresado = Hashear(request.Contrasena);
+        var hashIngresado = hasher.Hashear(request.Contrasena);
         if (usuario.ContrasenaHash != hashIngresado)
             throw new DominioException("Credenciales inválidas.");
+
+        var token = tokenService.GenerarToken(usuario);
 
         return new LoginResponse(
             usuario.Id,
             usuario.Nombre,
             usuario.CorreoElectronico.Valor,
-            usuario.EsAdministrador
+            usuario.EsAdministrador,
+            token
         );
-    }
-
-    private static string Hashear(string texto)
-    {
-        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(texto));
-        return Convert.ToHexString(bytes).ToLowerInvariant();
     }
 }
