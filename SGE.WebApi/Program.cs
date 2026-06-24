@@ -9,6 +9,7 @@ using SGE.Aplicacion.Usuarios;
 using SGE.Aplicacion.Autorizacion;
 using SGE.Aplicacion;
 using Scalar.AspNetCore;
+using SGE.WebApi.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +51,13 @@ builder.Services.AddScoped<ListarUsuariosUseCase>();
 builder.Services.AddScoped<EliminarUsuarioUseCase>();
 builder.Services.AddScoped<ModificarPermisosUsuarioUseCase>();
 builder.Services.AddScoped<ModificarMisDatosUseCase>();
+
+builder.Services.AddExceptionHandler<ManejadorGlobalDeExcepciones>();
+builder.Services.AddProblemDetails();
+
+builder.Services.AddScoped<IHasher, Sha256Hasher>();
+
+
 
 // JWT
 var jwtKey = builder.Configuration["Jwt:Key"]!;
@@ -95,6 +103,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
+app.UseExceptionHandler();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
