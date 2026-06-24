@@ -10,6 +10,8 @@ using SGE.Aplicacion.Autorizacion;
 using SGE.Aplicacion;
 using Scalar.AspNetCore;
 using SGE.WebApi.Middlewares;
+using SGE.WebApi.Servicios;
+using SGE.WebApi.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,6 +59,7 @@ builder.Services.AddProblemDetails();
 
 builder.Services.AddScoped<IHasher, Sha256Hasher>();
 
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 
 // JWT
@@ -107,5 +110,7 @@ app.UseExceptionHandler();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapUsuariosEndpoints();
 
 app.Run();
