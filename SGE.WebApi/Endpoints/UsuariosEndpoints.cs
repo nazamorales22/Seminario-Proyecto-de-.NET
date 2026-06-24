@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using SGE.Aplicacion.Usuarios;
 using SGE.Dominio.Comun;
-
+ 
 namespace SGE.WebApi.Endpoints;
 
 public static class UsuariosEndpoints
