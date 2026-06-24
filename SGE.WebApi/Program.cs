@@ -1,25 +1,84 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using SGE.Infraestructura;
+using SGE.Aplicacion.Expedientes;
+using SGE.Aplicacion.Tramites;
+using SGE.Aplicacion.Usuarios;
+using SGE.Aplicacion.Autorizacion;
+using SGE.Aplicacion;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Registrar SGEDbContext
+// Base de datos
 builder.Services.AddDbContext<SGEDbContext>(options =>
     options.UseSqlite("Data Source=SGE.sqlite"));
 
+// Unit of Work y Repositorios
+builder.Services.AddScoped<IUnidadDeTrabajo, UnidadDeTrabajo>();
+builder.Services.AddScoped<IExpedienteRepository, ExpedienteRepositorySql>();
+builder.Services.AddScoped<ITramiteRepository, TramiteRepositorySql>();
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepositorySql>();
+
+// Servicio de autorización
+builder.Services.AddScoped<IAutorizacionService, AutorizacionProvisionalService>();
+
+// Servicio de actualización de estado
+builder.Services.AddScoped<ActualizacionEstadoExpedienteService>();
+
+// Casos de uso de Expedientes
+builder.Services.AddScoped<AltaExpedienteUseCase>();
+builder.Services.AddScoped<BajaExpedienteUseCase>();
+builder.Services.AddScoped<ModificarExpedienteUseCase>();
+builder.Services.AddScoped<CambiarEstadoExpedienteUseCase>();
+builder.Services.AddScoped<ListarExpedientesUseCase>();
+builder.Services.AddScoped<ListarExpedientesPorEstadoUseCase>();
+builder.Services.AddScoped<ConsultarExpedientesPorEtiquetaUseCase>();
+
+// Casos de uso de Trámites
+builder.Services.AddScoped<AltaTramiteUseCase>();
+builder.Services.AddScoped<BajaTramiteUseCase>();
+builder.Services.AddScoped<ModificarTramiteUseCase>();
+builder.Services.AddScoped<ListarTramitesUseCase>();
+
+// Casos de uso de Usuarios
+builder.Services.AddScoped<LoginUseCase>();
+builder.Services.AddScoped<RegistrarUsuarioUseCase>();
+builder.Services.AddScoped<ListarUsuariosUseCase>();
+builder.Services.AddScoped<EliminarUsuarioUseCase>();
+builder.Services.AddScoped<ModificarPermisosUsuarioUseCase>();
+builder.Services.AddScoped<ModificarMisDatosUseCase>();
+
+// JWT
+var jwtKey = builder.Configuration["Jwt:Key"]!;
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+        };
+    });
+
+builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Crear la base de datos y sembrar datos
+// Inicializar base de datos y sembrar datos
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<SGEDbContext>();
     context.Database.EnsureCreated();
-    
-    // Configurar journal_mode=DELETE como pide el TP
     var connection = context.Database.GetDbConnection();
     connection.Open();
     using (var command = connection.CreateCommand())
@@ -27,7 +86,6 @@ using (var scope = app.Services.CreateScope())
         command.CommandText = "PRAGMA journal_mode=DELETE;";
         command.ExecuteNonQuery();
     }
-    
     context.SembrarDatos();
 }
 
@@ -38,5 +96,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.Run();
