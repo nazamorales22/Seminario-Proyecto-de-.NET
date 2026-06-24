@@ -75,4 +75,18 @@ public class Usuario
 
         ContrasenaHash = nuevoHash;
     }
+
+
+    // Solo para EF Core
+    public string PermisosSerializados
+    {
+        get => string.Join(',', _permisos.Select(p => p.ToString()));
+        private set
+        {
+            _permisos.Clear();
+            if (!string.IsNullOrEmpty(value))
+                foreach (var p in value.Split(','))
+                    _permisos.Add(Enum.Parse<Permiso>(p));
+        }
+    }
 }

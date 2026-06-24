@@ -485,4 +485,5 @@ $RECYCLE.BIN/
 SGE.Consola/*.txt
 *.lscache
 
+# Base de datos SQLite
 *.sqlite

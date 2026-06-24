@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SGE.Infraestructura.Migrations
 {
     /// <inheritdoc />
-    public partial class InicialSGE : Migration
+    public partial class Inicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,15 +16,31 @@ namespace SGE.Infraestructura.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Caratula_Valor = table.Column<string>(type: "TEXT", nullable: false),
                     FechaCreacion = table.Column<DateTime>(type: "TEXT", nullable: false),
                     FechaUltimaModificacion = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UsuarioUltimoCambio = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Estado = table.Column<int>(type: "INTEGER", nullable: false)
+                    Estado = table.Column<int>(type: "INTEGER", nullable: false),
+                    Caratula = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Expedientes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Usuarios",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Nombre = table.Column<string>(type: "TEXT", nullable: false),
+                    ContrasenaHash = table.Column<string>(type: "TEXT", nullable: false),
+                    EsAdministrador = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Permisos = table.Column<string>(type: "TEXT", nullable: false, defaultValue: ""),
+                    CorreoElectronico = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Usuarios", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -34,10 +50,10 @@ namespace SGE.Infraestructura.Migrations
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     ExpedienteId = table.Column<Guid>(type: "TEXT", nullable: false),
                     Etiqueta = table.Column<int>(type: "INTEGER", nullable: false),
-                    Contenido_Valor = table.Column<string>(type: "TEXT", nullable: false),
                     FechaCreacion = table.Column<DateTime>(type: "TEXT", nullable: false),
                     FechaUltimaModificacion = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    UsuarioUltimoCambio = table.Column<Guid>(type: "TEXT", nullable: false)
+                    UsuarioUltimoCambio = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Contenido = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -61,6 +77,9 @@ namespace SGE.Infraestructura.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Tramites");
+
+            migrationBuilder.DropTable(
+                name: "Usuarios");
 
             migrationBuilder.DropTable(
                 name: "Expedientes");

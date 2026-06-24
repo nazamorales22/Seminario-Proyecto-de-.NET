@@ -20,13 +20,13 @@ public class ExpedienteRepositorySql : IExpedienteRepository
     public void Agregar(Expediente expediente)
     {
         _context.Expedientes.Add(expediente); // EF sabe que va a la tabla de Expedientes
-        _context.SaveChanges();               // Impacta el INSERT en SQLite
+        
     }
 
     // 2. LEER TODOS LOS EXPEDIENTES
-    public List<Expediente> ObtenerTodos()
+    public IEnumerable<Expediente> ObtenerTodos()
     {
-        return _context.Expedientes.ToList(); // Trae todas las filas y las hace una lista de objetos C#
+        return _context.Expedientes.ToList();
     }
 
     // 3. BUSCAR UN EXPEDIENTE POR ID
@@ -39,7 +39,7 @@ public class ExpedienteRepositorySql : IExpedienteRepository
     public void Modificar(Expediente expediente)
     {
         _context.Expedientes.Update(expediente); // EF busca la fila por ID y actualiza sus campos
-        _context.SaveChanges();                  // Impacta el UPDATE
+        
     }
 
     // 5. ELIMINAR UN EXPEDIENTE
@@ -49,14 +49,10 @@ public class ExpedienteRepositorySql : IExpedienteRepository
         if (expediente != null)
         {
             _context.Expedientes.Remove(expediente); // Remueve la fila
-            _context.SaveChanges();                  // Impacta el DELETE
+            
             // ¡Acá actúa el borrado en cascada automático que configuramos hoy! 
             // SQLite va a borrar solo todos los trámites que le pertenecían a este expediente.
         }
     }
 
-    IEnumerable<Expediente> IExpedienteRepository.ObtenerTodos()
-    {
-        return ObtenerTodos();
-    }
 }
