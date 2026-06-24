@@ -12,6 +12,7 @@ using Scalar.AspNetCore;
 using SGE.WebApi.Middlewares;
 using SGE.WebApi.Servicios;
 using SGE.WebApi.Endpoints;
+using SGE.WebApi.Configuracion;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,6 +68,7 @@ var jwtKey = builder.Configuration["Jwt:Key"]!;
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        options.MapInboundClaims = false; 
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -81,7 +83,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+});
+
+
+//para que permita texto en vez de los nros en los permisos 
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+});
+
 
 var app = builder.Build();
 
@@ -103,7 +116,14 @@ using (var scope = app.Services.CreateScope())
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference();
+    app.MapScalarApiReference(options =>
+    {
+        options.WithPreferredScheme("Bearer")
+               .WithHttpBearerAuthentication(bearer =>
+               {
+                   bearer.Token = "";
+               });
+    });//para el token
 }
 
 app.UseExceptionHandler();
@@ -112,5 +132,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapUsuariosEndpoints();
+app.MapExpedientesEndpoints();
+app.MapTramitesEndpoints();
+
+app.MapGet("/", () => "¡La API está funcionando!");
 
 app.Run();
