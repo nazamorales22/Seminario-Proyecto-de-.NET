@@ -1,5 +1,6 @@
 using SGE.Aplicacion.Autorizacion;
 using SGE.Dominio.Comun;
+using SGE.Aplicacion.Comun;
 
 namespace SGE.Aplicacion.Usuarios;
 
@@ -16,7 +17,7 @@ public class EliminarUsuarioUseCase(IUsuarioRepository repo, IUnidadDeTrabajo uo
             throw new AutorizacionException("Solo los administradores pueden eliminar usuarios.");
 
         var usuarioAEliminar = repo.ObtenerPorId(request.IdUsuarioAEliminar)
-            ?? throw new DominioException("No se encontró el usuario a eliminar.");
+            ?? throw new EntidadNoEncontradaException("No se encontró el usuario a eliminar.");
 
         repo.Eliminar(request.IdUsuarioAEliminar);
         uow.Guardar();

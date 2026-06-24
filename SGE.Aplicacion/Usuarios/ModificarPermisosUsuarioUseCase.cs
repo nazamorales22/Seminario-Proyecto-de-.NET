@@ -1,5 +1,6 @@
 using SGE.Aplicacion.Autorizacion;
 using SGE.Dominio.Comun;
+using SGE.Aplicacion.Comun;
 
 namespace SGE.Aplicacion.Usuarios;
 
@@ -16,7 +17,7 @@ public class ModificarPermisosUsuarioUseCase(IUsuarioRepository repo, IUnidadDeT
             throw new AutorizacionException("Solo los administradores pueden modificar permisos.");
 
         var usuario = repo.ObtenerPorId(request.IdUsuarioAModificar)
-            ?? throw new DominioException("No se encontró el usuario.");
+            ?? throw new EntidadNoEncontradaException("No se encontró el usuario.");
 
         foreach (var permiso in Enum.GetValues<Permiso>())
             usuario.RemoverPermiso(permiso);
