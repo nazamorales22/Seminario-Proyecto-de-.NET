@@ -13,8 +13,14 @@ public class ManejadorGlobalDeExcepciones : IExceptionHandler
         Exception exception,
         CancellationToken cancellationToken)
     {
+        // LOG del error real en consola
+        Console.WriteLine($"=== EXCEPCIÓN: {exception.GetType().Name} ===");
+        Console.WriteLine($"Mensaje: {exception.Message}");
+        Console.WriteLine($"StackTrace: {exception.StackTrace}");
+
         var (statusCode, titulo, detalle) = exception switch
         {
+             BadHttpRequestException => (StatusCodes.Status400BadRequest, "Solicitud inválida", "El cuerpo de la solicitud es inválido o está incompleto."),
             AutorizacionException => (StatusCodes.Status403Forbidden, "No autorizado", exception.Message),
             EntidadNoEncontradaException => (StatusCodes.Status404NotFound, "Recurso no encontrado", exception.Message),
             DominioException => (StatusCodes.Status400BadRequest, "Error de validación", exception.Message),
@@ -29,9 +35,7 @@ public class ManejadorGlobalDeExcepciones : IExceptionHandler
         };
 
         httpContext.Response.StatusCode = statusCode;
-
         await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
-
         return true;
     }
 }

@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using SGE.Aplicacion.Usuarios;
 using SGE.Dominio.Comun;
+using Microsoft.AspNetCore.Mvc;
  
 namespace SGE.WebApi.Endpoints;
 
@@ -27,11 +28,15 @@ public static class UsuariosEndpoints
         .WithName("RegistrarUsuario")
         .AllowAnonymous();
 
-        grupo.MapPut("/me", (ModificarMisDatosRequest request, HttpContext context, ModificarMisDatosUseCase useCase) =>
+        grupo.MapPut("/mis-datos", (ModificarMisDatosRequest request, HttpContext context, ModificarMisDatosUseCase useCase) =>
         {
             var idDelToken = Guid.Parse(context.User.FindFirstValue(JwtRegisteredClaimNames.Sub)!);
 
-            var requestConIdReal = request with { IdUsuarioActivo = idDelToken };
+            var requestConIdReal = request with
+            {
+                IdUsuarioActivo = idDelToken,
+                IdUsuarioAModificar = idDelToken
+            };
 
             useCase.Ejecutar(requestConIdReal);
             return Results.NoContent();
@@ -57,7 +62,7 @@ public static class UsuariosEndpoints
         .WithName("EliminarUsuario")
         .RequireAuthorization();
 
-        grupo.MapPatch("/{id:guid}/permisos", (Guid id, IEnumerable<Permiso> nuevosPermisos, HttpContext context, ModificarPermisosUsuarioUseCase useCase) =>
+        grupo.MapPatch("/{id:guid}/permisos", (Guid id, [FromBody] IEnumerable<Permiso> nuevosPermisos, HttpContext context, ModificarPermisosUsuarioUseCase useCase) =>
         {
             var idDelToken = Guid.Parse(context.User.FindFirstValue(JwtRegisteredClaimNames.Sub)!);
             useCase.Ejecutar(new ModificarPermisosRequest(id, idDelToken, nuevosPermisos));
