@@ -27,8 +27,9 @@ public class AltaTramiteUseCase(
         var tramite = new Tramite(request.ExpedienteId, request.Etiqueta, contenido, request.IdUsuario);
 
         repoTramite.Agregar(tramite);
+        unidadDeTrabajo.Guardar();  // guarda el trámite
         actualizacionEstado.Ejecutar(request.ExpedienteId, request.IdUsuario);
-        unidadDeTrabajo.Guardar();
+        unidadDeTrabajo.Guardar();  // guarda el cambio de estado
 
         return new TramiteResponse(
             tramite.Id,

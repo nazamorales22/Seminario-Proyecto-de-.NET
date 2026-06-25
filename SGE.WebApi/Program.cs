@@ -40,6 +40,7 @@ builder.Services.AddScoped<CambiarEstadoExpedienteUseCase>();
 builder.Services.AddScoped<ListarExpedientesUseCase>();
 builder.Services.AddScoped<ListarExpedientesPorEstadoUseCase>();
 builder.Services.AddScoped<ConsultarExpedientesPorEtiquetaUseCase>();
+builder.Services.AddScoped<ObtenerExpedientePorIdUseCase>();
 
 // Casos de uso de Trámites
 builder.Services.AddScoped<AltaTramiteUseCase>();

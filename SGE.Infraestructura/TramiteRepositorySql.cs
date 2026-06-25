@@ -40,13 +40,16 @@ public class TramiteRepositorySql : ITramiteRepository
     public IEnumerable<Tramite> ObtenerPorExpedienteId(Guid expedienteId)
     {
         return _context.Tramites
+            .AsNoTracking() 
             .Where(t => t.ExpedienteId == expedienteId)
             .ToList();
     }
 
     public Tramite? ObtenerPorId(Guid id)
     {
-        return _context.Tramites.FirstOrDefault(t => t.Id == id);
+        return _context.Tramites
+            .AsNoTracking() //
+            .FirstOrDefault(t => t.Id == id);
     }
 
     public IEnumerable<Tramite> ObtenerTodos()

@@ -32,7 +32,9 @@ public class ExpedienteRepositorySql : IExpedienteRepository
     // 3. BUSCAR UN EXPEDIENTE POR ID
     public Expediente? ObtenerPorId(Guid id)
     {
-        return _context.Expedientes.FirstOrDefault(e => e.Id == id);
+        return _context.Expedientes
+            .AsNoTracking() //
+            .FirstOrDefault(e => e.Id == id);
     }
 
     // 4. MODIFICAR UN EXPEDIENTE EXISTENTE
