@@ -11,7 +11,7 @@ public class TramiteRepositorySql : ITramiteRepository
     {
         _context = context;
     }
-
+     //ELIMINARRR
     public void Agregar(Tramite tramite)
     {
         _context.Tramites.Add(tramite);
