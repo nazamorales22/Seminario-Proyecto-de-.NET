@@ -5,6 +5,9 @@ using SGE.Dominio.Tramites;
 
 namespace SGE.WebApi.Endpoints;
 
+public record AltaTramiteBody(Guid ExpedienteId, EtiquetaTramite Etiqueta, string Contenido);
+public record ModificarTramiteBody(EtiquetaTramite Etiqueta, string Contenido);
+
 public static class TramitesEndpoints
 {
     public static IEndpointRouteBuilder MapTramitesEndpoints(this IEndpointRouteBuilder app)
@@ -21,22 +24,30 @@ public static class TramitesEndpoints
         .RequireAuthorization();
 
         // POST /api/tramites - Alta de trámite
-        grupo.MapPost("/", (AltaTramiteRequest request, HttpContext context, AltaTramiteUseCase useCase) =>
+        grupo.MapPost("/", (AltaTramiteBody body, HttpContext context, AltaTramiteUseCase useCase) =>
         {
             var idUsuario = ObtenerIdUsuario(context);
-            var requestConId = request with { IdUsuario = idUsuario };
-            var response = useCase.Ejecutar(requestConId);
+            var request = new AltaTramiteRequest(
+                ExpedienteId: body.ExpedienteId,
+                Etiqueta: body.Etiqueta,
+                Contenido: body.Contenido,
+                IdUsuario: idUsuario);
+            var response = useCase.Ejecutar(request);
             return Results.Created($"/api/tramites/{response.Id}", response);
         })
         .WithName("AltaTramite")
         .RequireAuthorization();
 
         // PUT /api/tramites/{id} - Modificar trámite
-        grupo.MapPut("/{id:guid}", (Guid id, ModificarTramiteRequest request, HttpContext context, ModificarTramiteUseCase useCase) =>
+        grupo.MapPut("/{id:guid}", (Guid id, ModificarTramiteBody body, HttpContext context, ModificarTramiteUseCase useCase) =>
         {
             var idUsuario = ObtenerIdUsuario(context);
-            var requestConId = request with { Id = id, IdUsuario = idUsuario };
-            var response = useCase.Ejecutar(requestConId);
+            var request = new ModificarTramiteRequest(
+                Id: id,
+                Etiqueta: body.Etiqueta,
+                Contenido: body.Contenido,
+                IdUsuario: idUsuario);
+            var response = useCase.Ejecutar(request);
             return Results.Ok(response);
         })
         .WithName("ModificarTramite")
