@@ -10,6 +10,23 @@ public class RegistrarUsuarioUseCase(IUsuarioRepository repo, IUnidadDeTrabajo u
 {
     public RegistrarUsuarioResponse Ejecutar(RegistrarUsuarioRequest request)
     {
+        var camposFaltantes = new List<string>();
+
+        if (string.IsNullOrWhiteSpace(request.Nombre))
+            camposFaltantes.Add("nombre");
+
+        if (string.IsNullOrWhiteSpace(request.Correo))
+            camposFaltantes.Add("correo");
+
+        if (string.IsNullOrWhiteSpace(request.Contrasena))
+            camposFaltantes.Add("contraseña");
+
+        if (camposFaltantes.Count > 0)
+            throw new DominioException($"Los campos son obligatorios: {string.Join(", ", camposFaltantes)}.");
+
+        if (request.Contrasena.Length < 6)
+            throw new DominioException("La contraseña debe tener al menos 6 caracteres.");
+
         // Verificar que el correo no esté ya registrado
         var existente = repo.ObtenerPorCorreo(request.Correo);
         if (existente != null)

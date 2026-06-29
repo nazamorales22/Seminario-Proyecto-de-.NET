@@ -13,15 +13,9 @@ public class Expediente
     public Guid UsuarioUltimoCambio { get; private set; }
     public EstadoExpediente Estado { get; private set; }
 
-    // =========================================================================
-    // 🔔 NUEVO: EVENTO DE DOMINIO (Para el Patrón Observer - Clase 12)
-    // =========================================================================
     // Este evento se disparará cada vez que el estado cambie de verdad.
     public event EventHandler<EstadoExpedienteCambiadoEventArgs>? EstadoCambiado;
 
-    // =========================================================================
-    // 🗄️ NUEVO: CONSTRUCTOR PRIVADO VACÍO PARA ENTITY FRAMEWORK CORE
-    // =========================================================================
     // EF Core lo necesita sí o sí para materializar la entidad desde SQLite.
 #pragma warning disable CS8618 // Deshabilita el aviso de que Caratula arranca en null
     private Expediente() { } 
@@ -79,7 +73,7 @@ public class Expediente
             UsuarioUltimoCambio = idUsuario;
             FechaUltimaModificacion = DateTime.Now;
 
-            // 🔔 NUEVO: Disparamos el evento del Observer
+            
             NotificarCambioEstado(estadoAnterior, Estado);
 
             return true; 
@@ -96,7 +90,10 @@ public class Expediente
 
     public void CambiarEstado(EstadoExpediente nuevoEstado, Guid idUsuario)
     {
-        // 🛡️ NUEVO: CONTROL DEL CICLO DE VIDA (Requerimiento funcional nuevo)
+        if (!Enum.IsDefined(typeof(EstadoExpediente), nuevoEstado))
+            throw new DominioException("El estado especificado no es válido.");
+
+        
         if (Estado == EstadoExpediente.Finalizado)
             throw new DominioException("No se puede cambiar el estado de un expediente que ya está Finalizado.");
 
@@ -105,7 +102,7 @@ public class Expediente
         UsuarioUltimoCambio = idUsuario;
         FechaUltimaModificacion = DateTime.Now;
 
-        // 🔔 NUEVO: Disparamos el evento del Observer
+        
         NotificarCambioEstado(estadoAnterior, Estado);
     }
 
@@ -116,10 +113,6 @@ public class Expediente
     }
 }
 
-// =========================================================================
-// 🔔 NUEVO: OBJETO DE DATOS PARA EL EVENTO (Observer)
-// =========================================================================
-// Esta clase auxiliar viaja con el evento llevando la info de qué pasó.
 public class EstadoExpedienteCambiadoEventArgs : EventArgs
 {
     public Guid ExpedienteId { get; }

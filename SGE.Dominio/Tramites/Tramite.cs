@@ -28,6 +28,9 @@ private Tramite() { }
         if (usuarioId == Guid.Empty)
             throw new DominioException("El usuario no puede ser vacío.");
 
+        if (!Enum.IsDefined(typeof(EtiquetaTramite), etiqueta))
+            throw new DominioException("La etiqueta especificada no es válida.");
+
         Id = Guid.NewGuid();
         ExpedienteId = expedienteId;
         Etiqueta = etiqueta;
@@ -60,6 +63,9 @@ private Tramite() { }
     {
         if (usuarioId == Guid.Empty)
             throw new DominioException("El usuario no puede ser vacío.");
+
+        if (!Enum.IsDefined(typeof(EtiquetaTramite), etiqueta))
+            throw new DominioException("La etiqueta especificada no es válida.");
 
         Etiqueta = etiqueta;
         Contenido = contenido;

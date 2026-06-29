@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
  
 namespace SGE.WebApi.Endpoints;
 
+//public record ModificarMisDatosBody(string NuevoNombre, string NuevoCorreo, string? NuevaContrasena);
+public record ModificarMisDatosBody(string? NuevoNombre, string? NuevoCorreo, string? NuevaContrasena);
 public static class UsuariosEndpoints
 {
     public static IEndpointRouteBuilder MapUsuariosEndpoints(this IEndpointRouteBuilder app)
@@ -28,17 +30,18 @@ public static class UsuariosEndpoints
         .WithName("RegistrarUsuario")
         .AllowAnonymous();
 
-        grupo.MapPut("/mis-datos", (ModificarMisDatosRequest request, HttpContext context, ModificarMisDatosUseCase useCase) =>
+        grupo.MapPut("/mis-datos", (ModificarMisDatosBody body, HttpContext context, ModificarMisDatosUseCase useCase) =>
         {
             var idDelToken = Guid.Parse(context.User.FindFirstValue(JwtRegisteredClaimNames.Sub)!);
 
-            var requestConIdReal = request with
-            {
-                IdUsuarioActivo = idDelToken,
-                IdUsuarioAModificar = idDelToken
-            };
+            var request = new ModificarMisDatosRequest(
+                IdUsuarioActivo: idDelToken,
+                IdUsuarioAModificar: idDelToken,
+                NuevoNombre: body.NuevoNombre,
+                NuevoCorreo: body.NuevoCorreo,
+                NuevaContrasena: body.NuevaContrasena);
 
-            useCase.Ejecutar(requestConIdReal);
+            useCase.Ejecutar(request);
             return Results.NoContent();
         })
         .WithName("ModificarMisDatos")

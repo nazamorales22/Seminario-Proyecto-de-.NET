@@ -27,7 +27,7 @@ builder.Services.AddScoped<ITramiteRepository, TramiteRepositorySql>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepositorySql>();
 
 // Servicio de autorización
-builder.Services.AddScoped<IAutorizacionService, AutorizacionProvisionalService>();
+builder.Services.AddScoped<IAutorizacionService, AutorizacionService>();
 
 // Servicio de actualización de estado
 builder.Services.AddScoped<ActualizacionEstadoExpedienteService>();

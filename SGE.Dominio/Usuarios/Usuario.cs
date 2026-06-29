@@ -42,6 +42,9 @@ public class Usuario
 
     public void AsignarPermiso(Permiso permiso)
     {
+        if (!Enum.IsDefined(typeof(Permiso), permiso))
+            throw new DominioException("El permiso especificado no es válido.");
+
         _permisos.Add(permiso);
     }
 

@@ -20,6 +20,17 @@ public class AltaTramiteUseCase(
         if (!auth.PoseeElPermiso(request.IdUsuario, Permiso.TramiteAlta))
             throw new AutorizacionException("No tenés permiso para crear trámites.");
 
+        var camposFaltantes = new List<string>();
+
+        if (request.ExpedienteId == Guid.Empty)
+            camposFaltantes.Add("expedienteId");
+
+        if (string.IsNullOrWhiteSpace(request.Contenido))
+            camposFaltantes.Add("contenido");
+
+        if (camposFaltantes.Count > 0)
+            throw new DominioException($"Los campos son obligatorios: {string.Join(", ", camposFaltantes)}.");
+
         var expediente = repoExpediente.ObtenerPorId(request.ExpedienteId)
             ?? throw new EntidadNoEncontradaException("El expediente no existe.");
 
@@ -28,6 +39,7 @@ public class AltaTramiteUseCase(
 
         repoTramite.Agregar(tramite);
         unidadDeTrabajo.Guardar();  // guarda el trámite
+
         actualizacionEstado.Ejecutar(request.ExpedienteId, request.IdUsuario);
         unidadDeTrabajo.Guardar();  // guarda el cambio de estado
 
